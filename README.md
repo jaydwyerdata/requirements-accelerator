@@ -56,6 +56,12 @@ of ordinary intake.
 - [`docs/interview-branching.md`](docs/interview-branching.md) defines the interview's control
   flow: the field ledger, what gets asked, what gets skipped, and the three layers that don't
   follow the plain version of that recipe.
+- [`docs/output-template.md`](docs/output-template.md) defines the fixed structure of the business
+  ask and the technical spec, and which ledger fields render into each.
+- [`docs/readiness-scoring.md`](docs/readiness-scoring.md) defines the status, the completion
+  score, the blocking-versus-workable split, and who owns closing each named gap.
+- [`docs/interview-ux.md`](docs/interview-ux.md) defines which widget, free text, multi-choice,
+  hybrid or banded, each interview question uses on screen.
 
 ## Scope
 

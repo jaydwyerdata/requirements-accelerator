@@ -23,9 +23,14 @@ master because nobody else is doing it.
   assumed or missing.
 - **Interview branching and skip logic** (v0.1) defines the control flow: what gets asked, what
   gets skipped, and why.
+- **Output template and renderer** (v0.1) defines the fixed structure both output documents
+  follow, and which ledger fields feed which part of that structure.
+- **Readiness scoring and gap attribution** (v0.1) defines the status, the completion score, and
+  who owns closing each named gap.
+- **Interview interaction design** (v0.1) defines which widget, free text, multi-choice, hybrid or
+  banded, each question uses on screen.
 
-All three are reference documents. This file governs how work happens; those define what gets
-built.
+All six are reference documents. This file governs how work happens; those define what gets built.
 
 ## Working rules
 
