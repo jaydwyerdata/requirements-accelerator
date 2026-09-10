@@ -7,8 +7,22 @@ turns a vague ask into concrete data and solution requirements.
 
 ## Status
 
-Design stage. Not yet runnable. The interview design and working principles are documented; no
-code has been written.
+Early build. `python cli.py` runs an interactive layer 00 interview (the problem) from a terminal
+and prints a business ask and a readiness block from what it collected. Layers 01 through 09 are
+not wired in yet: that's the rest of e5. The one judgement call this slice makes (whether the first
+answer is a proposed solution rather than the actual problem) is made by a person at the keyboard
+for now, since no model is wired up. Growing `engine/reasoner.py` into a real model call is a later
+step (e4), kept behind the same interface so nothing else has to change when it lands.
+
+## Running it
+
+```
+python cli.py
+```
+
+Python 3.11 or later, no dependencies. See `examples/` for two scripted runs, one clean pass and
+one that trips the layer 00 redirect and self-corrects within the two-attempt cap, useful for
+seeing the whole flow without typing it out by hand.
 
 ## The problem
 
