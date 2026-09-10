@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Environment and secrets
+.env
+.env.*
+secrets.toml
+.streamlit/secrets.toml
+
+# Local data and generated output
+data/
+output/
+*.db
+*.sqlite3
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
