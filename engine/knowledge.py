@@ -10,6 +10,7 @@ database engine/storage.py's SqliteStorage writes to.
 """
 
 from abc import ABC, abstractmethod
+from contextlib import closing
 import json
 import sqlite3
 
@@ -43,7 +44,7 @@ class SqliteRetainedKnowledge(RetainedKnowledge):
         ensure_schema(self._db_path)  # a lookup can be the very first thing that touches the file
 
     def definition_for(self, term: str) -> str | None:
-        with sqlite3.connect(self._db_path) as conn:
+        with closing(sqlite3.connect(self._db_path)) as conn, conn:
             row = conn.execute(
                 """
                 SELECT fr.value

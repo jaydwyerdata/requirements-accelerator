@@ -16,6 +16,7 @@ Tracked as its own backlog item (e8) rather than folded into this one.
 """
 
 from abc import ABC, abstractmethod
+from contextlib import closing
 from datetime import datetime, timezone
 import json
 import sqlite3
@@ -27,7 +28,11 @@ def ensure_schema(db_path: str) -> None:
     """Creates the two tables if they don't exist yet. Shared by SqliteStorage and
     SqliteRetainedKnowledge so a fresh database file works no matter which one touches it
     first (e.g. a term lookup before anything's ever been saved)."""
-    with sqlite3.connect(db_path) as conn:
+    # sqlite3.connect()'s own context manager commits or rolls back but never closes the
+    # connection, which leaves the file locked (fatal on Windows, e.g. a temp-dir cleanup
+    # racing an open handle) until the object is garbage collected. `closing` around it is
+    # what actually guarantees the close, on every path through this function.
+    with closing(sqlite3.connect(db_path)) as conn, conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS interviews (
@@ -80,7 +85,7 @@ class SqliteStorage(Storage):
         ensure_schema(self._db_path)
 
     def save_interview(self, interview_id: str, ledger: Ledger) -> None:
-        with sqlite3.connect(self._db_path) as conn:
+        with closing(sqlite3.connect(self._db_path)) as conn, conn:
             conn.execute(
                 "INSERT INTO interviews (id, created_at) VALUES (?, ?) "
                 "ON CONFLICT(id) DO NOTHING",
@@ -104,7 +109,7 @@ class SqliteStorage(Storage):
                 )
 
     def load_interview(self, interview_id: str) -> Ledger | None:
-        with sqlite3.connect(self._db_path) as conn:
+        with closing(sqlite3.connect(self._db_path)) as conn, conn:
             exists = conn.execute(
                 "SELECT 1 FROM interviews WHERE id = ?", (interview_id,)
             ).fetchone()
@@ -126,7 +131,7 @@ class SqliteStorage(Storage):
         return ledger
 
     def list_interviews(self) -> list[dict]:
-        with sqlite3.connect(self._db_path) as conn:
+        with closing(sqlite3.connect(self._db_path)) as conn, conn:
             rows = conn.execute(
                 "SELECT id, created_at FROM interviews ORDER BY created_at"
             ).fetchall()
