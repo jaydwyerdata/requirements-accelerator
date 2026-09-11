@@ -7,12 +7,19 @@ turns a vague ask into concrete data and solution requirements.
 
 ## Status
 
-Early build. `python cli.py` runs an interactive layer 00 interview (the problem) from a terminal
-and prints a business ask and a readiness block from what it collected. Layers 01 through 09 are
-not wired in yet: that's the rest of e5. The one judgement call this slice makes (whether the first
-answer is a proposed solution rather than the actual problem) is made by a person at the keyboard
-for now, since no model is wired up. Growing `engine/reasoner.py` into a real model call is a later
-step (e4), kept behind the same interface so nothing else has to change when it lands.
+Early build, but the interview engine now runs end to end and remembers what it's told. `python
+cli.py` walks all nine interview layers (00 through 09) from a terminal, including layer 07's
+per-term definition loop, then prints a business ask and the full technical spec from what it
+collected. Every interview is saved to a local SQLite file (`requirements_accelerator.db`,
+gitignored - it's runtime data, not source), so a later interview that touches the same term sees
+what a prior one locked in as its definition, rather than starting from nothing every time. The
+one piece still stubbed is model access (e4): every judgement call the interview makes (is this a
+solution in disguise, does that name more than one system, is that definition too vague to test)
+is made by a person at the keyboard for now, via StubReasoner. Decided (see
+`docs/architecture-decisions.md`), not yet built.
+
+There's no frontend yet: this is a terminal script, useful for proving the branching logic and the
+two output documents are correct, not for demoing to anyone outside this project.
 
 ## Running it
 
@@ -20,9 +27,14 @@ step (e4), kept behind the same interface so nothing else has to change when it 
 python cli.py
 ```
 
-Python 3.11 or later, no dependencies. See `examples/` for two scripted runs, one clean pass and
-one that trips the layer 00 redirect and self-corrects within the two-attempt cap, useful for
-seeing the whole flow without typing it out by hand.
+Python 3.11 or later, no dependencies. See `examples/` for five scripted runs: a clean layer 00
+pass, one that trips the layer 00 redirect and self-corrects within the two-attempt cap, a full
+nine-layer pass that locks a definition in layer 07 and promotes an inferred field on
+confirmation, one that exercises both "not applicable" branches (layer 02's drill-through, layer
+04's system of record) plus a reflection that gets no reaction, and one that proves retained
+knowledge actually persists: a term locked in one interview shows up as a concrete question in a
+second one against a throwaway database. Useful for seeing the whole flow, and every branch of it,
+without typing it out by hand.
 
 ## The problem
 
@@ -54,10 +66,12 @@ It produces two documents from one interview:
   definitions, reporting specification, access requirements, testable acceptance criteria, and a
   readiness score naming exactly what is still missing and who can resolve it.
 
-It also accumulates knowledge across interviews. Not to prefill later answers, which would quietly
-homogenise the language of an organisation, but to ask better questions, surface overlap between
-requests, and build a dependency map that answers "who is affected if this changes" as a byproduct
-of ordinary intake.
+It also accumulates knowledge across interviews, not to prefill later answers (which would quietly
+homogenise the language of an organisation) but to ask better questions: a term one interview
+locked a definition for gets checked against, not re-asked from nothing, the next time it comes up.
+Surfacing overlap between requests and building a dependency map that answers "who is affected if
+this changes" are the same idea taken further, from the same stored data; both are still scope, not
+built yet.
 
 ## Design documents
 
@@ -76,6 +90,9 @@ of ordinary intake.
   score, the blocking-versus-workable split, and who owns closing each named gap.
 - [`docs/interview-ux.md`](docs/interview-ux.md) defines which widget, free text, multi-choice,
   hybrid or banded, each interview question uses on screen.
+- [`docs/architecture-decisions.md`](docs/architecture-decisions.md) records the two portability-
+  seam decisions: how the reasoner gets real model access, and what holds interview state and
+  retained knowledge.
 
 ## Scope
 

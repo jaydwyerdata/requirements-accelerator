@@ -2,32 +2,45 @@
 
 python cli.py
 
-Covers layer 00 only (the problem). Layers 01-09 are follow-up slices of e5; this proves
-the ledger, the gate and redirect, the reflection checkpoint, and the output renderer work
-end to end before the rest of the layers repeat the same pattern.
+Covers all nine layers (00 through 09), including layer 07's per-term definition loop, and now
+persists every interview to a local SQLite file (requirements_accelerator.db, gitignored - it's
+runtime data, not source) so later interviews can check a term's retained definition against
+real prior interviews rather than nothing. No model wired up yet (StubReasoner asks a human at
+the keyboard instead, e4) - that's the one piece still stubbed, tracked in
+docs/architecture-decisions.md.
 """
 
+import uuid
+
 from engine.ledger import Ledger
+from engine.knowledge import SqliteRetainedKnowledge
+from engine.storage import SqliteStorage
 from engine.reasoner import StubReasoner
-from engine.interview import run_layer_00
-from engine.render import render_business_ask, render_readiness_block
+from engine.interview import run_interview
+from engine.render import render_business_ask, render_technical_spec
+
+DB_PATH = "requirements_accelerator.db"
 
 
 def main():
-    print("Requirements Accelerator (v1, layer 00 only)")
+    print("Requirements Accelerator (v1)")
     print("=" * 60)
     print()
 
     ledger = Ledger()
     reasoner = StubReasoner()
-    run_layer_00(ledger, reasoner)
+    knowledge = SqliteRetainedKnowledge(DB_PATH)
+    run_interview(ledger, reasoner, knowledge)
+
+    storage = SqliteStorage(DB_PATH)
+    storage.save_interview(str(uuid.uuid4()), ledger)
 
     print()
     print("=" * 60)
     print()
     print(render_business_ask(ledger))
     print()
-    print(render_readiness_block(ledger))
+    print(render_technical_spec(ledger))
 
 
 if __name__ == "__main__":
