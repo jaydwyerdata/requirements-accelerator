@@ -1,6 +1,6 @@
 # Architecture Decisions
 
-Version 0.1, last revised 10 September 2026.
+Version 0.1, last revised 11 September 2026.
 
 Short-form decision records for the two portability-seam questions CLAUDE.md left open: model
 provider and storage. Each entry states the decision, the reasoning, and what it costs. Revised in
@@ -22,6 +22,35 @@ where a person is typing between calls anyway.
 **Consequence**: `engine/reasoner.py` gains a second implementation of the `Reasoner` interface
 alongside `StubReasoner`, call it a Claude Code-backed one, with nothing else in the engine
 changing. The interface is what makes this swap free.
+
+**Implementation (11 September 2026)**: built as `ClaudeCodeReasoner` in `engine/reasoner.py`.
+Each of `judge`, `extract_terms` and `summarise_for_reflection` builds a plain-language prompt
+and shells out to `claude -p "<prompt>" --output-format json --tools "" --no-session-persistence`,
+then parses the JSON payload's `result` field. `--tools ""` because a judgement call never needs
+to read a file or run a command; `--no-session-persistence` because a full interview makes
+dozens of these calls and none is a conversation worth resuming. `--bare` was considered and
+rejected: it forces API-key-only auth and never reads the keychain, which would defeat the whole
+reason this shells out to the CLI instead of calling the API. A call that fails, whether the
+process errors, times out, or the JSON has no usable result, raises `ClaudeCliError` rather than
+guessing an answer: per CLAUDE.md's claim-integrity rule, a judgement this tool can't actually
+get an honest answer to has to stop the interview, not fake one. `cli.py` now constructs
+`ClaudeCodeReasoner` instead of `StubReasoner`.
+
+Verification is partial, and the gap is worth stating plainly rather than glossing over.
+Parsing and command construction were checked against mocked subprocess output (a fake `yes`,
+`no`, a term list, `none`, an `is_error` payload, a non-zero exit) and all parse or raise
+correctly. Wiring was checked against the real CLI: running `cli.py` end to end raises
+`ClaudeCliError: claude -p reported an error: 'Not logged in · Please run /login'` at the first
+judgement call, confirming the call actually reaches a real `claude -p` subprocess rather than a
+stub, and that a failed call surfaces cleanly instead of hanging or crashing on an unparsed
+result. What could not be verified here: whether `judge`, `extract_terms` and
+`summarise_for_reflection` actually produce sensible answers to real interview content, because
+this build ran inside a sandboxed session whose Bash tool spawns subprocesses that can't read
+this machine's own `claude` CLI credentials (confirmed: `~/.claude/.credentials.json` exists and
+is current, but `claude -p` still reports not logged in when run this way) - a sandbox isolation
+boundary, not a defect in the code or a fact about the machine's normal setup. Running `python
+cli.py` from an ordinary terminal, outside that sandbox, is the real end-to-end proof still
+outstanding.
 
 ## Storage (e3)
 

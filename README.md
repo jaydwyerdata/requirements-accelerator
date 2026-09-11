@@ -12,11 +12,14 @@ cli.py` walks all nine interview layers (00 through 09) from a terminal, includi
 per-term definition loop, then prints a business ask and the full technical spec from what it
 collected. Every interview is saved to a local SQLite file (`requirements_accelerator.db`,
 gitignored - it's runtime data, not source), so a later interview that touches the same term sees
-what a prior one locked in as its definition, rather than starting from nothing every time. The
-one piece still stubbed is model access (e4): every judgement call the interview makes (is this a
-solution in disguise, does that name more than one system, is that definition too vague to test)
-is made by a person at the keyboard for now, via StubReasoner. Decided (see
-`docs/architecture-decisions.md`), not yet built.
+what a prior one locked in as its definition, rather than starting from nothing every time. Model
+access (e4) is built too: every judgement call the interview makes (is this a solution in
+disguise, does that name more than one system, is that definition too vague to test) goes to
+`ClaudeCodeReasoner`, a real Claude Code CLI subprocess, not a person at the keyboard. It needs
+the `claude` CLI installed and logged in on whatever machine runs `cli.py`; see
+`docs/architecture-decisions.md` for the reasoning and, honestly, for what verifying it actually
+still needs (its live output hasn't been checked from inside a sandboxed build session that
+can't reach the CLI's own stored login).
 
 There's no frontend yet: this is a terminal script, useful for proving the branching logic and the
 two output documents are correct, not for demoing to anyone outside this project.

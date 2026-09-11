@@ -2,12 +2,13 @@
 
 python cli.py
 
-Covers all nine layers (00 through 09), including layer 07's per-term definition loop, and now
+Covers all nine layers (00 through 09), including layer 07's per-term definition loop, and
 persists every interview to a local SQLite file (requirements_accelerator.db, gitignored - it's
 runtime data, not source) so later interviews can check a term's retained definition against
-real prior interviews rather than nothing. No model wired up yet (StubReasoner asks a human at
-the keyboard instead, e4) - that's the one piece still stubbed, tracked in
-docs/architecture-decisions.md.
+real prior interviews rather than nothing. Every judgement call goes to ClaudeCodeReasoner (e4):
+a real Claude Code CLI subprocess, not a person at the keyboard. Decided and implemented, see
+docs/architecture-decisions.md, including what that needs from the environment it runs in
+(the `claude` CLI installed and logged in).
 """
 
 import uuid
@@ -15,7 +16,7 @@ import uuid
 from engine.ledger import Ledger
 from engine.knowledge import SqliteRetainedKnowledge
 from engine.storage import SqliteStorage
-from engine.reasoner import StubReasoner
+from engine.reasoner import ClaudeCodeReasoner
 from engine.interview import run_interview
 from engine.render import render_business_ask, render_technical_spec
 
@@ -28,7 +29,7 @@ def main():
     print()
 
     ledger = Ledger()
-    reasoner = StubReasoner()
+    reasoner = ClaudeCodeReasoner()
     knowledge = SqliteRetainedKnowledge(DB_PATH)
     run_interview(ledger, reasoner, knowledge)
 
