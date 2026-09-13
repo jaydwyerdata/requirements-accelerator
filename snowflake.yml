@@ -1,0 +1,21 @@
+# a3 spike (see docs/a3-spike-deployment.md and docs/architecture-decisions.md's "a3 spike"
+# entry): deploys app.py, unmodified except for _select_reasoner, as a Streamlit-in-Snowflake
+# app on the standard warehouse runtime, no compute pool needed. `engine/` is listed as a whole
+# artifact so the package (including cortex_reasoner.py, only imported when a Snowpark session
+# is actually active) ships alongside app.py and bridge.py.
+#
+# TODO before running `snow streamlit deploy`: fill in query_warehouse and, if you want a
+# specific database/schema rather than whatever your default connection uses, add them to your
+# `snow` CLI connection config rather than here, this file deliberately doesn't hardcode either.
+definition_version: 2
+entities:
+  requirements_accelerator_spike:
+    type: streamlit
+    identifier: requirements_accelerator_spike
+    stage: requirements_accelerator_stage
+    query_warehouse: TODO_YOUR_WAREHOUSE
+    main_file: app.py
+    artifacts:
+      - app.py
+      - bridge.py
+      - engine/
