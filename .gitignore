@@ -11,12 +11,14 @@ env/
 .env.*
 secrets.toml
 .streamlit/secrets.toml
+.snowflake_config.toml
 
 # Local data and generated output
 data/
 output/
 *.db
 *.sqlite3
+delivered/
 
 # Editors and OS
 .vscode/

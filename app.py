@@ -59,6 +59,17 @@ SESSION_KEYS = (
 )
 
 
+def _rerun() -> None:
+    """st.rerun(), falling back to the older st.experimental_rerun() name. Needed because
+    Streamlit-in-Snowflake's bundled Streamlit build (as of this a3 spike run, 13 September
+    2026) predates the rerun() rename and only exposes experimental_rerun(), confirmed live
+    against the deployed app after st.rerun() raised AttributeError there. Local Streamlit
+    installs have st.rerun() and never touch the fallback.
+    """
+    rerun = getattr(st, "rerun", None) or st.experimental_rerun
+    rerun()
+
+
 def _pump(reply: str | None = None) -> None:
     """Hand a reply to the waiting engine thread (if any) and block until it produces the next
     thing worth showing: more narration to display, a new prompt to wait on, or a terminal
@@ -112,6 +123,21 @@ def _select_reasoner():
     return CortexReasoner()
 
 
+def _reasoner_requirement_caption() -> str:
+    """What this deployment needs in order to answer, in the requester's own terms: the `claude`
+    CLI locally, or nothing extra inside Snowflake since Cortex is already part of the account.
+    Runs the same environment check as _select_reasoner so this caption never claims the wrong
+    one; discovered as stale (it named the `claude` CLI unconditionally) once the a3 spike
+    actually ran inside Snowflake, where that CLI was never true.
+    """
+    try:
+        from snowflake.snowpark.context import get_active_session
+        get_active_session()
+    except Exception:
+        return "Needs the `claude` CLI installed and logged in on this machine."
+    return "Runs on Snowflake Cortex, already available in this account."
+
+
 def _start_interview() -> None:
     # StubReasoner is never an option here, on top of the environment choice above: its
     # judge()/extract_terms()/reframe()/consolidate_terms() ask via the `input()` builtin
@@ -160,7 +186,7 @@ def _render_question() -> None:
             submitted = st.form_submit_button("Send")
         if submitted:
             _pump(reply)
-            st.rerun()
+            _rerun()
         return
 
     has_escape_hatch = "something else" in choices
@@ -169,7 +195,7 @@ def _render_question() -> None:
     for choice in fixed_choices:
         if st.button(choice, key=f"choice_{choice}", use_container_width=True):
             _pump(choice)
-            st.rerun()
+            _rerun()
 
     if has_escape_hatch:
         with st.form("something_else_form", clear_on_submit=True):
@@ -178,7 +204,7 @@ def _render_question() -> None:
             submitted = st.form_submit_button("Send")
         if submitted and reply.strip():
             _pump(reply)
-            st.rerun()
+            _rerun()
 
 
 st.set_page_config(page_title="Requirements Accelerator", page_icon="\U0001F4CB")
@@ -192,10 +218,10 @@ if st.session_state.status == "idle":
         "Answer a short interview about what you need. It ends with a plain-language business "
         "ask and a technical spec ready for engineering."
     )
-    st.caption("Needs the `claude` CLI installed and logged in on this machine.")
+    st.caption(_reasoner_requirement_caption())
     if st.button("Start interview", type="primary"):
         _start_interview()
-        st.rerun()
+        _rerun()
 
 elif st.session_state.status in ("running", "waiting"):
     st.text(st.session_state.transcript)
@@ -217,11 +243,11 @@ elif st.session_state.status == "done":
         )
     if st.button("Start a new interview"):
         _reset()
-        st.rerun()
+        _rerun()
 
 elif st.session_state.status == "error":
     st.text(st.session_state.transcript)
     st.error(f"The interview hit an error and stopped: {st.session_state.error}")
     if st.button("Start over"):
         _reset()
-        st.rerun()
+        _rerun()

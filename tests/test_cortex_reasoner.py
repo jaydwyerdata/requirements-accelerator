@@ -57,6 +57,36 @@ class CortexReasonerTest(unittest.TestCase):
         reasoner = self._make_reasoner("  active customer, engaged member  ")
         self.assertEqual(reasoner._call("anything"), "active customer, engaged member")
 
+    def test_quote_wrapped_reply_is_unquoted(self):
+        # claude-sonnet-5 via AI_COMPLETE wraps short answers in a full JSON string literal
+        # (confirmed live during the a3 spike deploy: judge()'s "yes"/"no" replies came back
+        # quoted, which silently broke judge()'s startswith("y") check). Without this unwrapped,
+        # every judge() call reads as False.
+        reasoner = self._make_reasoner('"yes"')
+        self.assertEqual(reasoner._call("anything"), "yes")
+
+    def test_escaped_newlines_in_a_quoted_reply_become_real_newlines(self):
+        # Same JSON-string wrapping, but on a multi-line reply: confirmed live that
+        # summarise_for_reflection()'s paraphrase came back with literal backslash-n sequences,
+        # not real newlines, because the whole reply is a JSON string literal, not just
+        # quote-wrapped. json.loads() undoes the escaping along with the quotes; a naive
+        # strip-the-outer-quotes fix would leave the \n literal.
+        reasoner = self._make_reasoner('"Line one\\nLine two"')
+        self.assertEqual(reasoner._call("anything"), "Line one\nLine two")
+
+    def test_reply_that_is_only_a_quote_character_is_left_alone(self):
+        # Guards against treating an unterminated JSON string as something to unwrap.
+        reasoner = self._make_reasoner('"')
+        self.assertEqual(reasoner._call("anything"), '"')
+
+    def test_non_json_reply_with_a_leading_and_trailing_quote_is_left_alone(self):
+        # A reply that merely starts and ends with `"` without being valid JSON (e.g. it quotes
+        # a word mid-sentence) must not be mistaken for the wrapper and partially unwrapped.
+        reasoner = self._make_reasoner('"quoted" mid-sentence, not a JSON string"')
+        self.assertEqual(
+            reasoner._call("anything"), '"quoted" mid-sentence, not a JSON string"'
+        )
+
     def test_a_different_model_name_is_actually_used(self):
         from engine.cortex_reasoner import CortexReasoner
         self._fake_session.sql.return_value.collect.return_value = [{"RESPONSE": "yes"}]

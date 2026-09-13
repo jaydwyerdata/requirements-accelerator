@@ -27,6 +27,8 @@ your own account before relying on this, and pass a different model name if need
 adapter never hardcodes an assumption you can't override.
 """
 
+import json
+
 from .reasoner import _PromptedReasoner
 
 
@@ -53,4 +55,21 @@ class CortexReasoner(_PromptedReasoner):
         row = self._session.sql(
             "SELECT AI_COMPLETE(?, ?) AS response", params=[self._model, prompt]
         ).collect()[0]
-        return row["RESPONSE"].strip()
+        response = row["RESPONSE"].strip()
+        # claude-sonnet-5 via AI_COMPLETE wraps every response, short or long, as a full JSON
+        # string literal: outer quotes plus proper escaping of embedded newlines and quotes
+        # (e.g. judge()'s "yes" comes back as the four characters "yes", and
+        # summarise_for_reflection()'s multi-line paraphrase comes back with literal \n
+        # sequences, not real newlines). Confirmed live during this a3 spike run by querying
+        # AI_COMPLETE directly with judge()'s and summarise_for_reflection()'s exact prompts.
+        # json.loads() undoes exactly that wrapping (quotes and all standard escapes) in one
+        # step, rather than hand-stripping only the outer quote pair, which left \n literal.
+        # Falls back to the raw text on anything that isn't a clean JSON string, since nothing
+        # here guarantees the model always wraps its answer this way. ClaudeCodeReasoner's
+        # `claude` CLI doesn't do this, so the unwrap lives here rather than in the shared base
+        # class.
+        try:
+            decoded = json.loads(response)
+        except json.JSONDecodeError:
+            return response
+        return decoded if isinstance(decoded, str) else response

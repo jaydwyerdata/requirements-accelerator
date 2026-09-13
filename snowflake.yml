@@ -13,7 +13,7 @@ entities:
     type: streamlit
     identifier: requirements_accelerator_spike
     stage: requirements_accelerator_stage
-    query_warehouse: TODO_YOUR_WAREHOUSE
+    query_warehouse: LISTENING_LENS_WH
     main_file: app.py
     artifacts:
       - app.py

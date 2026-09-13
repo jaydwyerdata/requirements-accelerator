@@ -924,10 +924,60 @@ installed here, matching the CLAUDE.md dependencies-stay-short reasoning `cortex
 own docstring gives) proves the calling convention and that `CortexReasoner` shares every prompt
 with `ClaudeCodeReasoner`. Full suite 90/90.
 
-**Not yet run against a live Snowflake environment.** This cloud sandbox has no way to reach
-Jay's trial account or run the `snow` CLI, so the actual deployment and the two real questions
-above are the next step, to run via Claude Code on jaypc, the same pattern e4's and e12's live
-verification used. Whatever the result, it settles the spike's question honestly rather than
-committing to the full a3 port on an assumption: if bridge.py's threading or the Cortex swap
-turn out not to work cleanly, that's exactly the kind of finding worth having before, not after,
-building the storage and delivery seams too.
+**Run live against the trial account on 13 September 2026, via Claude Code on jaypc.** Both real
+questions are answered: `bridge.py`'s background-thread-plus-queue pattern completes cleanly
+inside Snowflake's compute environment (no hangs across a full interview, one call ran ~25s,
+most 5-8s, but every one returned), and the model-provider seam works, once two bugs the live
+run actually surfaced were fixed. A full interview ran end to end: 35/35 fields collected, status
+"ready to size", both the business ask and technical spec rendered, and `SqliteStorage` /
+`deliver_documents` both completed without error.
+
+**Deployed into `REQUIREMENTS_ACCELERATOR.PUBLIC`, a database created for this spike**, not
+Jay's personal database (`snow` refused a stage there: "Stages cannot currently be created in a
+personal database") and not anything under Listening Lens's Native App objects, keeping the two
+projects' trial-account footprints separate as intended.
+
+**Connection: Programmatic Access Token, not browser SSO.** `--authenticator externalbrowser`
+failed outright on this trial account (`390190: There was an error related to the SAML Identity
+Provider account parameter`), because a fresh trial has no SAML IdP federated to it, the
+authenticator needs. Snowflake CLI's documented PAT pattern,
+`authenticator = "PROGRAMMATIC_ACCESS_TOKEN"` plus `token_file_path`, also failed on the
+installed CLI (v3.1.0, well behind the v3.27.0 current release): `251006: Password is empty`,
+most likely a version gap rather than a config mistake, since the config matched Snowflake's docs
+exactly. What actually worked: the PAT value placed directly in the plain `password` field with
+the default authenticator, the same "use a PAT anywhere a password goes" fallback Snowflake
+documents for BI tools with no native PAT support. Recorded here since the documented method
+didn't work as documented on this CLI version, and the fallback isn't obviously the first thing
+to reach for.
+
+**Two real bugs the live run found, both fixed and covered by tests, neither guessable from
+reading the code beforehand**:
+
+1. **Streamlit-in-Snowflake's bundled Streamlit build doesn't have `st.rerun()`**, only the older
+   `st.experimental_rerun()`, so every rerun call in `app.py` raised `AttributeError` the moment
+   the interview was started. This directly falsifies this entry's earlier claim that `app.py`
+   runs "unmodified" apart from `_select_reasoner`, it does not. Fixed with a small `_rerun()`
+   helper (`getattr(st, "rerun", None) or st.experimental_rerun`) used everywhere `app.py`
+   previously called `st.rerun()` directly; local Streamlit installs have `st.rerun()` and never
+   touch the fallback.
+2. **`AI_COMPLETE` wraps every reply, short or long, in a full JSON string literal**: outer
+   quotes plus proper escaping, so `judge()`'s expected `"yes"` came back as the four characters
+   `"yes"` (breaking `.startswith("y")`, every judge() call silently read as False) and
+   `summarise_for_reflection()`'s multi-line paraphrase came back with literal `\n` two-character
+   sequences instead of real newlines. Fixed in `CortexReasoner._call()` with `json.loads()` on
+   the raw response, falling back to the raw text when it isn't valid JSON, rather than
+   hand-stripping quotes, which would have left the escaped newlines broken.
+   `ClaudeCodeReasoner`'s `claude` CLI output doesn't exhibit this, so the unwrap lives in the
+   Cortex adapter only. Confirmed directly with `SELECT AI_COMPLETE('claude-sonnet-5', ...)`
+   before writing the fix, not inferred from the app's behaviour alone.
+
+**One packaging issue, not a Cortex or Streamlit issue**: `snow streamlit deploy` failed
+(`253006: Not a file but a directory`) trying to upload `engine/__pycache__`, a leftover local
+build artifact already gitignored but present on disk. Cleared before each deploy; worth an
+`.snowflakeignore` or a pre-deploy clean step if this spike becomes the real a3 port.
+
+**One cosmetic finding, not fixed**: the model's own phrasing in a couple of generated questions
+used an em dash, which is against this repo's own no-em-dash rule for "generated output" in
+CLAUDE.md. Not something `_PromptedReasoner`'s prompts currently instruct against; worth a prompt
+tweak if this becomes the real port, not blocking for a spike whose job was the transport and
+threading, not prompt polish.

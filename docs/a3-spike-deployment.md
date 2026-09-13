@@ -75,6 +75,26 @@ build all used.
 - Multiple concurrent users, or anything about production hardening. This is a feasibility
   check, not a launch.
 
+## What actually happened (run 13 September 2026)
+
+Both questions this spike exists to answer came back yes, after two live-only bugs were found
+and fixed. Full account in docs/architecture-decisions.md's "a3 spike" entry; short version:
+
+- `bridge.py`'s background thread completed cleanly every time, no hangs, across a full
+  35-field interview run to completion (business ask and technical spec both rendered,
+  storage and delivery both succeeded).
+- `AI_COMPLETE` itself worked, but its replies come back as full JSON string literals (quotes
+  plus escaped newlines), which silently broke `judge()`'s yes/no parsing and
+  `summarise_for_reflection()`'s line breaks until `CortexReasoner._call()` unwrapped them with
+  `json.loads()`. Not visible from reading the code beforehand, only from watching a real
+  `judge()` call get treated as "no" when the answer was plainly "not sure".
+- Streamlit-in-Snowflake's bundled Streamlit predates `st.rerun()`, so `app.py` needed a small
+  version-safe `_rerun()` helper. This means the "unmodified except `_select_reasoner`" claim
+  made earlier in this file and in architecture-decisions.md was wrong; both are corrected now.
+- `snow streamlit deploy` also failed on a stray local `engine/__pycache__` directory (unrelated
+  to Cortex or Streamlit), and on trying to create a stage in a personal database, both worked
+  around during this run, see architecture-decisions.md for specifics.
+
 ## Afterwards
 
 Whatever happens, tell Claude what you saw (worked cleanly, hung, errored, partially worked)
