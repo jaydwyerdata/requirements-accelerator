@@ -18,7 +18,9 @@ build all used.
   through the active Snowpark session instead of shelling out to the `claude` CLI.
 - `app.py`: unchanged except `_select_reasoner()`, which tries `get_active_session()` first and
   only falls back to `ClaudeCodeReasoner` if that fails, so the exact same file runs locally
-  and inside Snowflake.
+  and inside Snowflake, plus a small `_rerun()` helper added once this spike actually ran (see
+  "What actually happened" below), since Streamlit-in-Snowflake's bundled Streamlit predates
+  `st.rerun()`.
 - `snowflake.yml`: a `snow streamlit deploy` project file, warehouse runtime, no compute pool.
 - `tests/test_cortex_reasoner.py`: proves the calling convention (bound parameters, response
   parsing) with a faked Snowpark session, not that a live Cortex call behaves sensibly, only
@@ -26,8 +28,8 @@ build all used.
 
 ## Steps
 
-1. Fill in `query_warehouse` in `snowflake.yml` (the `TODO_YOUR_WAREHOUSE` placeholder) with a
-   warehouse in your trial account, whatever you already used for Listening Lens is fine.
+1. `query_warehouse` in `snowflake.yml` is already filled in (`LISTENING_LENS_WH`, the same
+   warehouse Listening Lens used). Change it if your trial account uses a different one.
 2. From the repo root, with the `snow` CLI configured against your trial account:
    ```
    snow streamlit deploy --replace --open

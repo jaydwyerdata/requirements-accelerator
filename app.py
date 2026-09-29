@@ -34,11 +34,13 @@ document just to show a recap.
 
 a3 spike (docs/architecture-decisions.md's "a3 spike" entry): this same file is also the one
 deployed as the Streamlit-in-Snowflake app for that spike, unmodified except for
-`_select_reasoner` below. Storage and delivery are untouched, still SqliteStorage and a local
-disk write, since the spike is scoped to the model-provider seam only; a local SQLite file
-inside the app's container is fine for proving the reasoner swap and bridge.py's threading
-model, even though it won't persist across app restarts, that's a3's storage seam, not this
-spike's job.
+`_select_reasoner` below and the small `_rerun()` helper above it (added once this spike
+actually ran against Streamlit-in-Snowflake's older bundled Streamlit, see
+docs/a3-spike-deployment.md's "What actually happened"). Storage and delivery are untouched,
+still SqliteStorage and a local disk write, since the spike is scoped to the model-provider seam
+only; a local SQLite file inside the app's container is fine for proving the reasoner swap and
+bridge.py's threading model, even though it won't persist across app restarts, that's a3's
+storage seam, not this spike's job.
 """
 
 import uuid
