@@ -13,79 +13,44 @@ this tool only ever grades the first.
 
 ## Status
 
-Feature-complete for a single-user portfolio build, not production software: every interview layer
-runs end to end, both output documents render, delivery writes finished `.docx` files, and the
-same app has been run live in two different environments (below). No auth, multi-tenancy or hosted
-service, by design, see Scope. `python cli.py` walks all nine interview layers (00 through 09) from a terminal, including layer 07's
-per-term definition loop, then prints a business ask and the full technical spec from what it
-collected. Every interview is saved to a local SQLite file (`requirements_accelerator.db`,
-gitignored - it's runtime data, not source), so a later interview that touches the same term sees
-what a prior one locked in as its definition, rather than starting from nothing every time. Model
-access (e4) is built and now verified end to end: every judgement call the interview makes (is this
-a solution in disguise, does that name more than one system, is that definition too vague to test)
-goes to `ClaudeCodeReasoner`, a real Claude Code CLI subprocess, not a person at the keyboard. It
-needs the `claude` CLI installed and logged in on whatever machine runs `cli.py`; see
-`docs/architecture-decisions.md` for the reasoning and for the live terminal run that confirmed it
-actually works, not just that it parses correctly against mocked output.
+Feature-complete for a single-user portfolio build, not production software: every interview
+layer runs end to end, both output documents render, and the same code runs unmodified in two live
+environments, a local terminal or browser and inside Snowflake (see Portability below). No auth,
+multi-tenancy or hosted service, by design, see Scope.
 
-That live run surfaced a real gap: the interview asked its fixed question list correctly but felt
-transactional rather than conversational, no way to say "I don't understand" or "not sure" and get
-a different framing back, and layer 07's term queue picked up duplicates and structural words
-rather than only genuine ambiguous business terms. `docs/interview-branching.md` v0.2 and
-`docs/architecture-decisions.md`'s `reframe` revision specify the fix; it is built, every question
-now classifies a reply and reframes rather than accepting or looping forever, and all five
-`examples/` scripts and the full `tests/` suite (see below) pass against it under `StubReasoner`.
-A real regression in this slice, an unguarded `consolidate_terms` call that should only fire when
-a term is actually queued, shipped believed-fixed and wasn't; the new automated tests caught it
-immediately, see `docs/architecture-decisions.md`'s note on it. That question, whether
-`ClaudeCodeReasoner`'s real `judge`, `reframe` and `consolidate_terms` calls behave sensibly against
-real interview content and not just correct control flow, has since been run twice, live, against
-the real model (12 and 13 September 2026), and both runs found real issues rather than a clean
-pass. The first caught `reframe()` inventing two product names the requester never gave, a direct
-miss against its own prompt instruction; the prompt was tightened to forbid inventing anything not
-verbatim in what the requester actually said, and a rerun the next day reframed again under a
-different trigger and stayed fully grounded, treated as resolved and watched, not closed and
-forgotten, since one clean nondeterministic rerun is a data point, not proof. `extract_terms` and
-`consolidate_terms` converging on the term an interview is obviously about is a separate, still open
-question, unresolved across both runs, tracked in `docs/architecture-decisions.md` rather than
-silently patched over.
+`python cli.py` and `streamlit run app.py` both walk all nine interview layers (00 through 09),
+including layer 07's per-term definition loop, then produce a business ask and a technical spec
+from what the interview collected. Every interview persists to a local SQLite file
+(`requirements_accelerator.db`, gitignored, runtime data, not source), so a later interview
+touching the same term sees what a prior one locked in as its definition rather than starting from
+nothing.
 
-A locally hosted Streamlit frontend (e7) now exists (`app.py`), the same `run_interview` `cli.py`
-runs, on a background thread bridged to Streamlit's rerun model via `bridge.py`; see
-`docs/architecture-decisions.md`'s e7 entry for how and why. It now implements
-`docs/interview-ux.md`'s widget-per-question design too: `engine/protocol.py`'s `Question.choices`
-already encoded the free-text/multi-choice/hybrid/banded classification as data, so `bridge.py`
-passes it straight through and `app.py` renders buttons for a closed answer set, buttons plus an
-always-visible text box when "something else" is one of the options, and a plain text box
-otherwise, with no per-field lookup table needed. Layer 07's competing-definition check, the one
-question whose choices depend on runtime state rather than a fixed list, now also renders as
-buttons: `matches / doesn't match / not sure` when retained knowledge has a prior definition for
-the term, `worth flagging / not a concern / not sure` when it doesn't, exactly as
-`docs/interview-ux.md` specifies. Confirmed working end to end on a real browser (`streamlit run
-app.py`) on 12 September 2026: the rendered widgets behave as intended, and a real mock interview
-against `ClaudeCodeReasoner` surfaced two real gaps, both fixed the same day, an internal
-"LAYER NN" header leaking into the requester-facing transcript, and four closed-choice questions
-that read as generic out of context (`blast_radius`, `fan_out_risk`, `cardinality_risk`, `volume`,
-reworded in `docs/coaxing-protocol.md` and `engine/protocol.py`). See
-`docs/architecture-decisions.md`'s e7 and e9 entries and "First real mock interview, findings" for
-the full detail.
+Every judgement call the interview makes, is this a solution in disguise, does that name more than
+one system, is that definition too vague to test, goes to a real model through the `Reasoner`
+seam: `ClaudeCodeReasoner` (a Claude Code CLI subprocess) locally, `CortexReasoner` (`AI_COMPLETE`)
+inside Snowflake, picked automatically by `_select_reasoner`, never a person typing answers by
+hand. Both paths have been run live, not just against `StubReasoner`'s scripted replies: a full
+interview has completed end to end inside Snowflake against `CortexReasoner`, and separately,
+`ClaudeCodeReasoner`'s classify-and-reframe check and per-term definition loop were run live and
+checked specifically for quality, not just correct control flow, catching a real issue, a
+`reframe()` call that once invented details the requester never gave, since fixed. One thing stays
+open rather than fixed: `extract_terms`/`consolidate_terms` doesn't reliably converge on a single
+canonical term across a long interview, tracked as a known, watched limitation rather than patched
+over. The full account of what was found and fixed, run by run, lives in
+`docs/architecture-decisions.md`; this section states where things landed, not the path there.
 
-Delivery (a2) is built: once an interview finishes, both `cli.py` and `app.py` write the two
-rendered documents to disk via `engine/delivery.py`, one to a business-ask folder and one to a
-technical-spec folder (gitignored local defaults, `delivered/business-ask/` and
-`delivered/technical-spec/`), never the same folder for both, since the technical spec is
-internal-only and the business ask isn't. Point those two folders at a synced OneDrive- or
-SharePoint-synced directory instead to get finished documents there with zero integration or
-tenant configuration; see `docs/architecture-decisions.md`'s a2 entry for the full reasoning and
-the real design risk it was built to avoid.
+The Streamlit frontend (`app.py`) implements `docs/interview-ux.md`'s widget-per-question design:
+buttons for a closed answer set, buttons plus an always-visible text box when "something else" is
+an option, and plain text otherwise, driven entirely by `Question.choices` data with no per-field
+lookup table.
 
-What actually lands in those two folders (e13) is now a letterheaded Word document, not plain
-text: `engine/docx_render.py` renders the same ledger content `engine/render.py` already prints to
-a terminal or a browser tab, as a `.docx` file with a title, document type and interview id on
-every page, and a coloured badge on the technical spec's provenance states (green stated, blue
-inferred, amber assumed, red missing), so what came from the requester and what the tool inferred
-or assumed is visible before you've read a word of it. See `docs/output-template.md`'s Word
-template section and `docs/architecture-decisions.md`'s e13 entry.
+Finished interviews deliver as letterheaded `.docx` files, not plain text: a title, document type
+and interview id on every page, and on the technical spec, a coloured badge per field (green
+stated, blue inferred, amber assumed, red missing), so what came from the requester and what the
+tool inferred or assumed is visible before you've read a word of it. Both documents write to
+separate local folders (gitignored defaults, `delivered/business-ask/` and
+`delivered/technical-spec/`, see Running it below), never the same folder for both, since the
+technical spec is internal only.
 
 ## Running it
 
