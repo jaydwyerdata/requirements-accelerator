@@ -25,3 +25,7 @@ delivered/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local tooling and scratch, not portfolio content
+.claude/
+Test Interview/

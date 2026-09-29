@@ -84,3 +84,34 @@ as locked, that is the interview branching document's rule, applied before the f
 the renderer. It does not soften or interpret a gap's wording, a missing field renders as missing
 regardless of how close the interview got. Rendering is the last, most mechanical step: by the time
 it runs, every real decision has already been made.
+
+## The Word template (e13)
+
+Decided 14 September 2026 (see `docs/architecture-decisions.md`'s e13 entry for the full account).
+Both documents are delivered as `.docx` files, not plain text: engine/render.py's plain-text
+functions still exist and still feed the terminal printout (cli.py) and the on-screen recap
+(app.py), but what gets written to disk goes through a second renderer, `engine/docx_render.py`,
+that turns the same ledger into a letterheaded Word document. This section says how that structure
+maps onto the two documents above, not a new content decision, the content is unchanged.
+
+**Letterhead, on both documents.** A title ("Requirements Accelerator"), the document type
+("Business Ask" or "Technical Spec (internal only)"), the interview id's first eight characters,
+and the date. Enough to identify which document this is and which interview it came from once it's
+sitting in someone's downloads folder, detached from any conversation that produced it.
+
+**The business ask** keeps its three beats as headings ("What we understood", "What you're trying
+to solve", "What happens next") with the same gate: no problem statement, no document beyond the
+letterhead and a one-line explanation why.
+
+**The technical spec** renders every field table (one per layer) with an added fourth visual
+element beyond what the plain-text version shows: a coloured badge in the State column, matching
+the colour already used for status on the project's build tracker (green stated, blue inferred,
+amber assumed, red missing). The readiness block leads with the same badge treatment on its overall
+status (green "READY TO SIZE", red "NOT READY TO SIZE"). This is deliberate: the provenance model's
+whole point is what came from the requester versus what was inferred or assumed, and a colour you
+see before you read anything makes that distinction the first thing a reader notices rather than
+something they have to parse from a bracketed label.
+
+Nothing here is asked or computed differently than the plain-text renderer already does; this is
+presentation only, layered on top per this document's own "What the renderer does not do" section
+above.

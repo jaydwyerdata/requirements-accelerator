@@ -27,7 +27,10 @@ That was the last MC/HYB/BAND question in the protocol still rendering as free t
 Delivery: once an interview finishes, the two rendered documents are also written to disk via
 engine/delivery.py (a2), the same call cli.py makes, so they land somewhere real (a synced
 OneDrive/SharePoint folder, if that's what the two configured paths point at) rather than only
-existing in a browser tab that closes.
+existing in a browser tab that closes. e13: what gets delivered is now a letterheaded .docx
+document, built by engine/docx_render.py from the same ledger; the on-screen preview below still
+uses engine/render.py's plain-text renderers, since a browser tab has no reason to render a Word
+document just to show a recap.
 
 a3 spike (docs/architecture-decisions.md's "a3 spike" entry): this same file is also the one
 deployed as the Streamlit-in-Snowflake app for that spike, unmodified except for
@@ -44,6 +47,7 @@ import streamlit as st
 
 from bridge import Bridge, start_interview_thread
 from engine.delivery import deliver_documents
+from engine.docx_render import render_business_ask_docx, render_technical_spec_docx
 from engine.interview import run_interview
 from engine.knowledge import SqliteRetainedKnowledge
 from engine.ledger import Ledger
@@ -93,11 +97,12 @@ def _pump(reply: str | None = None) -> None:
         elif signal == "done":
             st.session_state.status = "done"
             ledger = st.session_state.ledger
-            SqliteStorage(DB_PATH).save_interview(st.session_state.interview_id, ledger)
+            interview_id = st.session_state.interview_id
+            SqliteStorage(DB_PATH).save_interview(interview_id, ledger)
             st.session_state.delivered = deliver_documents(
-                st.session_state.interview_id,
-                render_business_ask(ledger),
-                render_technical_spec(ledger),
+                interview_id,
+                render_business_ask_docx(ledger, interview_id),
+                render_technical_spec_docx(ledger, interview_id),
             )
         elif signal == "error":
             st.session_state.status = "error"

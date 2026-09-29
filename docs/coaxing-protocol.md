@@ -26,9 +26,13 @@ Reveals: The actual problem, separated from the requester's proposed solution
 
 Reveals: Current process · hidden source systems · the shadow spreadsheet nobody mentions
 
-> How often does this bite you, and who else does it bite?
+> How often does this bite you?
 
-Reveals: Frequency · blast radius · evidence for prioritisation
+Reveals: Frequency · evidence for prioritisation
+
+> Who else deals with this same problem?
+
+Reveals: Blast radius
 
 > If this were fixed, what would you do differently on Monday? **[rarely asked]**
 
@@ -86,11 +90,11 @@ Reveals: Grain, answerable by anyone
 
 **Why it matters**: The whole model hangs off this. Asked in schema language it gets a blank stare; asked as a spreadsheet it gets a correct answer almost every time.
 
-> Could the same one show up on more than one row?
+> Could that ever show up more than once in the spreadsheet?
 
 Reveals: Fan-out and double-count risk
 
-> Does one of these ever belong to more than one of those at the same time?
+> Could one of these ever belong to more than one group at the same time?
 
 Reveals: Many-to-many cardinality. The thing that silently breaks totals
 
@@ -216,7 +220,7 @@ Reveals: Role design. Builds for the second requester before they arrive
 
 Two questions, asked in orders of magnitude. Nobody knows their row counts; everybody knows whether it's hundreds or millions.
 
-> Roughly how many of these are we talking about: hundreds, thousands, millions?
+> Roughly how much data is this: hundreds, thousands, or millions of records?
 
 Reveals: Volume sizing · warehouse sizing · clustering worth considering
 

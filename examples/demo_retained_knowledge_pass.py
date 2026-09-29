@@ -7,6 +7,14 @@ SqliteRetainedKnowledge finds the locked term's definition and correctly reports
 unlocked one - only a locked definition counts as retained knowledge, per
 docs/interview-branching.md's three lock conditions, not just "a term someone typed something
 for once."
+
+Updated for docs/interview-branching.md v0.2: the definition question now runs through the
+shared classify-and-reframe check (engine/interview.py's _classify_and_reframe) with layer 07's
+own extra check for testability, rather than its own bespoke vagueness loop. "healthy account"
+still exercises the full two-attempt shape, generic check clean, testability check flags it,
+one reframe, a concrete second attempt, both checks clear; it still ends up unlocked here, not
+because it stays vague but because the reflection gets no reaction, exactly as in the original
+version of this demo.
 """
 
 import os
@@ -23,7 +31,8 @@ RESPONSES = [
     # --- "at risk customer": locks ---
     "A customer counts as at risk once they've had two support escalations in 30 days with no "
     "resolution.",
-    "n",  # reasoner: not too vague, concrete enough
+    "n",  # generic check: a genuine answer
+    "n",  # layer 07's extra check: not too vague, concrete enough
     "No, retention hasn't defined this before.",
     "cancellations",
     "Some call it a churn flag.",
@@ -31,13 +40,30 @@ RESPONSES = [
 
     # --- "healthy account": does not lock ---
     "An account is healthy if it's not at risk, basically.",
-    "y",  # reasoner: too vague
+    "n",  # generic check: a confidently stated claim, not confusion
+    "y",  # layer 07's extra check: too vague to test
+    "What would make \"healthy account\" count, concretely enough to check against a row?",
     "One that's renewed on time the last two cycles with no open escalation.",
-    "n",  # reasoner: concrete enough now, loop breaks
+    "n",  # generic check
+    "n",  # layer 07's extra check: concrete enough now, loop breaks
     "No.",
     "none",
     "Nothing else, really.",
     "",  # no reaction to reflection - stays unlocked regardless of the definition being fine
+]
+
+# A second interview, same database, should now see the prior definition mid-interview - not
+# just via a direct definition_for() call, but through the actual layer 07 question. Module
+# level, alongside RESPONSES, so tests/test_retained_knowledge.py can import it rather than
+# duplicate it.
+SECOND_INTERVIEW_RESPONSES = [
+    "Basically the same idea, two unresolved escalations inside a month.",  # definition
+    "n",  # generic check
+    "n",  # layer 07's extra check: not vague
+    "yes",  # answering the now-concrete competing-definition question: matches
+    "cancellations",
+    "Churn flag, same as before.",
+    "yes",  # reflection confirm
 ]
 
 if __name__ == "__main__":
@@ -65,16 +91,6 @@ if __name__ == "__main__":
             f"an unlocked term should never come back as retained knowledge, got "
             f"{unlocked_definition!r}")
 
-        # A second interview, same database, should now see the prior definition mid-interview -
-        # not just via a direct definition_for() call, but through the actual layer 07 question.
-        SECOND_INTERVIEW_RESPONSES = [
-            "Basically the same idea, two unresolved escalations inside a month.",  # definition
-            "n",  # not vague
-            "yes",  # answering the now-concrete competing-definition question: matches
-            "cancellations",
-            "Churn flag, same as before.",
-            "yes",  # reflection confirm
-        ]
         with patch("builtins.input", side_effect=SECOND_INTERVIEW_RESPONSES):
             ledger_b = Ledger()
             run_layer_07(ledger_b, StubReasoner(), retained, ["at risk customer"])

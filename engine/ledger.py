@@ -80,3 +80,13 @@ class Ledger:
     def is_missing(self, field_id: str) -> bool:
         record = self._records.get(field_id)
         return record is None or record.state == ProvenanceState.MISSING
+
+    def known_values(self) -> dict[str, object]:
+        """field_id to value for everything not missing, for grounding a reasoner call
+        (a reframe, a term consolidation) in what the requester has actually said so far,
+        rather than the field's technical name or an invented example."""
+        return {
+            field_id: record.value
+            for field_id, record in self._records.items()
+            if record.state != ProvenanceState.MISSING
+        }

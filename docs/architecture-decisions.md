@@ -981,3 +981,54 @@ used an em dash, which is against this repo's own no-em-dash rule for "generated
 CLAUDE.md. Not something `_PromptedReasoner`'s prompts currently instruct against; worth a prompt
 tweak if this becomes the real port, not blocking for a spike whose job was the transport and
 threading, not prompt polish.
+
+## e13: the document template (14 September 2026)
+
+Named on the build tracker as the last real piece of the puzzle once a3 was verified: everything
+the interview collects was already rendering as terse plain text (engine/render.py, since v0.1 of
+docs/output-template.md), correct in content but not something either persona in CLAUDE.md's
+two-persona split would actually hand someone. The requester's business ask in particular is
+meant to be "something to show their own colleagues"; a wall of monospaced text does not do that.
+
+**Decided on the train, before any code was written**: Word (.docx) for both documents, not PDF
+or a second markdown variant, since a requester or a data lead editing or annotating a Word file
+needs no extra tooling. A light letterhead on both (title, document type, interview id, date), so
+either document still identifies itself once it's saved somewhere detached from this tool. And,
+for the technical spec specifically, the provenance state (stated, inferred, assumed, missing)
+shown as a coloured badge rather than a bracketed label, using the same green/blue/amber/red the
+build tracker artifact already uses for status, because a plain-language answer sitting next to
+its engineer-grade translation with the gap visually obvious, rather than something read carefully
+to notice, is the single clearest demo moment this tool has.
+
+**Built**: `engine/docx_render.py`, a new module and the only place in the engine that imports
+python-docx, the same dependency-isolation reasoning this file already gives `engine/reasoner.py`
+keeping `engine/cortex_reasoner.py`'s `snowflake.snowpark` import out of itself. It imports its
+field lists and gap logic (`LAYER_FIELDS`, `LAYER_NAMES`, `ALL_FIELDS`, `BLOCKING_FIELDS`,
+`GAP_REASONS`, `GAP_PLAIN_LANGUAGE`, `_terms_in_ledger`) directly from `engine/render.py` rather
+than re-deriving them, so the two renderers cannot drift apart on what a gap is or which fields
+belong to which layer. `render_business_ask_docx` and `render_technical_spec_docx` mirror
+`render_business_ask`/`render_technical_spec`'s structure field for field; the one addition is the
+badge, built by hand (`_shade_cell`/`_badge`) since python-docx exposes no public cell-fill API,
+the standard `w:shd` OXML recipe instead.
+
+`engine/delivery.py` changed to accept anything with a `.save(path)` method rather than a string,
+and writes `.docx` files instead of `.md`, staying free of a python-docx import itself per its own
+"thinnest layer" docstring, the same duck-typing reasoning `cortex_reasoner.py` already models.
+`cli.py` and `app.py` both changed the same way: the terminal printout and the on-screen recap
+still use `engine/render.py`'s plain-text functions unchanged, only the `deliver_documents` call
+now builds and passes the two Word documents from `engine/docx_render.py`. `docs/output-template.md`
+gained a short section mapping this structure onto the Word template; no content decision changed,
+only its presentation.
+
+`tests/test_docx_render.py` (15 tests) covers the layer-00 gate, the ready/not-ready readiness
+badge and its colour, the provenance badge colour for each of the four states, the definitions
+section with and without a term, and the reporting appendix's primary_measure gate, reading
+documents back through python-docx's own object model rather than raw XML except for the one
+OXML cell-fill lookup this module has to hand-roll to verify a badge's colour at all.
+`tests/test_delivery.py` was rewritten to build real Document fixtures and reopen the saved
+`.docx` files rather than asserting on plain-text content, since that is now genuinely what the
+module does. Full suite 105/105. Two real generated documents (`render_business_ask_docx` and
+`render_technical_spec_docx` against a hand-built ledger with a mix of stated, inferred and
+assumed fields) were also saved and reopened directly, not just exercised through the test suite,
+confirming both actually produce a valid, readable `.docx` file with the expected structure
+before this entry was written.

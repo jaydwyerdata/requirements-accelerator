@@ -21,7 +21,7 @@ master because nobody else is doing it.
   question paired with the technical attribute its answer reveals.
 - **Provenance model** (v0.1) defines how every collected field is marked: stated, inferred,
   assumed or missing.
-- **Interview branching and skip logic** (v0.1) defines the control flow: what gets asked, what
+- **Interview branching and skip logic** (v0.2) defines the control flow: what gets asked, what
   gets skipped, and why.
 - **Output template and renderer** (v0.1) defines the fixed structure both output documents
   follow, and which ledger fields feed which part of that structure.

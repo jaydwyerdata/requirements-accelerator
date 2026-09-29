@@ -31,7 +31,7 @@ LAYER_00_QUESTIONS = [
     Question("current_process", "Walk me through what you do today when you need this.", "00"),
     Question("frequency", "How often does this bite you?", "00",
               choices=["daily", "weekly", "monthly", "rarely"]),
-    Question("blast_radius", "And who else does it bite?", "00"),
+    Question("blast_radius", "Who else deals with this same problem?", "00"),
     Question("activation_use_case", "If this were fixed, what would you do differently on Monday?", "00"),
     Question("acceptance_criteria", "How would you know it worked?", "00"),
 ]
@@ -61,9 +61,9 @@ LAYER_03_QUESTIONS = [
     Question("grain", "If I handed you a spreadsheet of this, what would one row be: one customer, "
               "one order, one day?", "03",
               choices=["one customer", "one order", "one day", "something else"]),
-    Question("fan_out_risk", "Could the same one show up on more than one row?", "03",
+    Question("fan_out_risk", "Could that ever show up more than once in the spreadsheet?", "03",
               choices=["yes", "no", "not sure"]),
-    Question("cardinality_risk", "Does one of these ever belong to more than one of those at the "
+    Question("cardinality_risk", "Could one of these ever belong to more than one group at the "
               "same time?", "03", choices=["yes", "no", "not sure"]),
 ]
 
@@ -110,6 +110,14 @@ LAYER_07_QUESTIONS = [
     Question("synonyms", "What do you call this? Does anyone call it something else?", "07"),
 ]
 
+# Layer 07's competing_definition_check is the one field in the whole protocol whose choices
+# depend on runtime state, not just its field_id: docs/interview-ux.md specifies two distinct
+# closed answer sets, one for each of the two phrasings run_layer_07 already prints depending on
+# whether retained knowledge holds a prior definition for the term. Kept as their own constants,
+# not on the Question object above, since Question.choices is a single fixed list per field.
+COMPETING_DEFINITION_CHOICES_WITH_PRIOR = ["matches", "doesn't match", "not sure"]
+COMPETING_DEFINITION_CHOICES_NO_PRIOR = ["worth flagging", "not a concern", "not sure"]
+
 LAYER_08_QUESTIONS = [
     Question("row_level_security", "Should everyone looking at this see all of it, or only their "
               "own part?", "08", choices=["everyone sees all of it", "only their own part"]),
@@ -119,7 +127,7 @@ LAYER_08_QUESTIONS = [
 ]
 
 LAYER_09_QUESTIONS = [
-    Question("volume", "Roughly how many of these are we talking about: hundreds, thousands, "
-              "millions?", "09", choices=["hundreds", "thousands", "millions", "not sure"]),
+    Question("volume", "Roughly how much data is this: hundreds, thousands, or millions of "
+              "records?", "09", choices=["hundreds", "thousands", "millions", "not sure"]),
     Question("growth_rate", "Is that number growing fast?", "09", choices=["yes", "no", "not sure"]),
 ]
