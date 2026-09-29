@@ -6,14 +6,11 @@ full shape both documents are meant to have: a readiness block, then layers 00 t
 field by field, a definitions subsection keyed by term, and a reporting specification
 appendix whenever a primary measure exists.
 
-One extension beyond what docs/readiness-scoring.md's text (last read earlier in this build,
-not re-read this slice) explicitly says: an unlocked layer 07 term is treated as a blocking
-gap, the same tier as query_type/primary_measure/grain/source_systems. This isn't copied
-verbatim from that document; it's inferred from docs/interview-branching.md's own language
-("a term does not count as locked... short of that it stays a named gap rather than something
-the spec quietly treats as settled") given that a disputed metric definition is exactly the
-kind of thing that should stop a build from being sized. Worth confirming against
-readiness-scoring.md directly if that document is revisited.
+An unlocked layer 07 term is treated as a blocking gap, the same tier as
+query_type/primary_measure/grain/source_systems. This matches docs/readiness-scoring.md's own
+blocking list directly: an unlocked term is its fifth named condition alongside those four
+fields, so this module isn't extending beyond that document, it's carrying out what the document
+already specifies.
 """
 
 from .ledger import Ledger, ProvenanceState, Owner, owner_for

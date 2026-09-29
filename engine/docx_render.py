@@ -149,7 +149,7 @@ def _add_field_table(doc: Document, layer_id: str, fields: list[str], ledger: Le
         row = table.add_row().cells
         row[0].text = field_id
         if record is None or record.state == ProvenanceState.MISSING:
-            row[1].text = "—"
+            row[1].text = "--"
             _badge(row[2], "MISSING", _STATE_COLOURS[ProvenanceState.MISSING])
             row[3].text = f"owner: {owner_for(field_id).value}"
         else:
@@ -235,7 +235,7 @@ def _add_definitions_section(doc: Document, ledger: Ledger) -> None:
         locked = ledger.get(f"term_locked::{term}")
         status = "locked" if (locked is not None and locked.value) else "not locked"
 
-        doc.add_heading(f'"{term}" — {status}', level=2)
+        doc.add_heading(f'"{term}" -- {status}', level=2)
         if definition is not None:
             doc.add_paragraph(f"Definition: {definition.value}")
         if exclusions is not None:
