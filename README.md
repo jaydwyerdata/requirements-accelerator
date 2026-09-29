@@ -147,6 +147,10 @@ this exists.
 
 ## The problem
 
+I'm the one this lands on. A hands-on data engineer with no business analyst, project manager or
+scrum master on my team, so all three jobs sit on top of the actual engineering work, not instead
+of it. This tool exists because I needed it myself, not as a hypothetical persona.
+
 Data teams without business analyst support spend their time translating. A request arrives as "I
 need to see our renewals", and somewhere between that sentence and a working data product, someone
 has to work out what one row represents, which system is authoritative, whether history needs
