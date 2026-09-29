@@ -1032,3 +1032,11 @@ module does. Full suite 105/105. Two real generated documents (`render_business_
 assumed fields) were also saved and reopened directly, not just exercised through the test suite,
 confirming both actually produce a valid, readable `.docx` file with the expected structure
 before this entry was written.
+
+## Test count correction (29 September 2026)
+
+The e13 entry above closed with "Full suite 105/105", accurate when it was written. A
+documentation audit found the live count is 109: `tests/test_cortex_reasoner.py` grew from the 5
+tests the a3 spike entry above counted to 9, with no note logging the addition, a gap against this
+file's own "document as you go" convention. `README.md`'s Testing section is corrected to match.
+No behaviour changed, only the count was stale.

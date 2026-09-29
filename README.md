@@ -104,7 +104,7 @@ disk-writing behaviour (a2, now `.docx` files, see below), `engine/docx_render.p
 readiness badge and per-field provenance badge colours (e13), the ten-interview synthetic dataset
 below, e8's overlap report, a1's semantic view adapter, and a3's `CortexReasoner` calling
 convention against a faked Snowpark session (all below), in real pass/fail assertions (stdlib
-`unittest`, no new dependency beyond `python-docx`, 105 tests as of this writing), reusing each
+`unittest`, no new dependency beyond `python-docx`, 109 tests as of this writing), reusing each
 demo script's scripted dialogue by import rather than duplicating it. The demo scripts stay as
 readable, runnable walkthroughs; this is what actually catches a regression rather than relying on
 someone reading printed output. See `docs/architecture-decisions.md`'s Testing section for why
