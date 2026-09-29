@@ -61,10 +61,13 @@ noted as an exception below:
      nothing happening.
 3. At the end of the layer, reflect back everything the ledger holds for it, in the requester's own
    language. Explicit confirmation promotes every inferred row from this layer to stated, confirmed
-   by reflection. Explicit correction overwrites the value, tagged stated, their correction, and
-   keeps the original inferred value in the record rather than deleting it. No reaction, moving past
-   the reflection without engaging it, changes nothing: the field stays inferred, because silence is
-   not confirmation.
+   by reflection. Explicit correction is recorded as a layer-level note, tagged stated, their
+   correction, rather than rewriting any one field: a free-text correction doesn't say which field
+   it concerns, so the inferred fields a wrong reflection was correcting stay inferred rather than
+   being promoted on the strength of a reflection just flagged as wrong. Field-level correction is
+   a known gap against this rule, tracked in `engine/interview.py`'s own `reflect_and_promote`
+   docstring. No reaction, moving past the reflection without engaging it, changes nothing: the
+   field stays inferred, because silence is not confirmation.
 
 Most layers run this recipe with no further complication: every question in them is independent of
 the others in the same layer, so they all get asked unless the ledger already answers them. Three

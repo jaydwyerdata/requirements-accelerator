@@ -46,8 +46,10 @@ Every field carries one of two severities, decided once here rather than re-judg
   explicit exclusions answer, reflection confirmation), since an unresolved definition is how a
   number ends up disputed after the build, not a detail to defer
 
-**Workable.** Everything else: `audience_breadth`, `dimensions`, `drill_through_required`,
-`benchmark_comparison`, `fan_out_risk`, `cardinality_risk`, `system_of_record`, `entry_latency`,
+**Workable.** Everything else: `problem_statement`, `current_process`, `frequency`,
+`blast_radius`, `activation_use_case`, `acceptance_criteria`, `usage_pattern`,
+`audience_breadth`, `dimensions`, `drill_through_required`, `benchmark_comparison`,
+`fan_out_risk`, `cardinality_risk`, `system_of_record`, `entry_latency`,
 `restatement_handling`, the whole of layer 05, `freshness_sla`, `schedule_alignment`,
 `history_depth`, `scd_requirement`, `row_level_security`, `data_classification`,
 `future_role_design`, `volume`, `growth_rate`. Real gaps, all named, none of them stop sizing from

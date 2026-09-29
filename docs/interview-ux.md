@@ -45,8 +45,8 @@ who else it bites (FT, since role and team names aren't a fixed set).
 
 `query_type`: MC, how much, how many, which ones, has something changed, already phrased as options
 in the protocol itself. `usage_pattern`: MC, on a schedule or when something feels wrong.
-`audience_breadth`: FT for who else, MC yes, no, not sure for whether they're asking the same
-question.
+`audience_breadth`: FT, one open question covering who else deals with this and whether
+they're asking the same thing.
 
 ## Layer 02, shape of the answer
 
@@ -81,7 +81,7 @@ prior answers, which is a future extension, not part of this version.
 ## Layer 06, time
 
 `freshness_sla`: BAND, real-time, same day, next morning, weekly or slower. `schedule_alignment`:
-HYB, month end, Monday morning, no particular moment, plus something else. `history_depth`: BAND,
+HYB, month end, Monday morning, none, plus something else. `history_depth`: BAND,
 this year only, last two to three years, five years or more, all available history.
 `scd_requirement`: MC, what it looked like back then, or only how it looks now.
 

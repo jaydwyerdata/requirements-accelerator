@@ -57,9 +57,10 @@ Coaxing Protocol's own layer names.
 
 **Definitions, as its own subsection**, not folded into layer 07's place in the sequence, since
 layer 07 is structurally a loop rather than a single set of fields. One block per term the interview
-touched, each showing its definition, its exclusions, its synonyms, and whether it cleared all three
-conditions to count as locked. A term that never locked renders with whatever it has and is marked
-not locked, rather than omitted, so the gap is visible rather than silently dropped.
+touched, each showing its definition, its competing-definition check, its exclusions, its synonyms,
+and whether it cleared all three conditions to count as locked. A term that never locked renders
+with whatever it has and is marked not locked, rather than omitted, so the gap is visible rather
+than silently dropped.
 
 **Reporting specification, appended whenever a primary measure exists.** Almost every request that
 clears layer 02 has something to report on, so this is included by default rather than gated on
