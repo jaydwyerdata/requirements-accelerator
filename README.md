@@ -2,13 +2,14 @@
 
 A curious business analyst at the front, a data engineer at the back.
 
-A self-serve tool that interviews the person requesting a data solution, in plain language, and
-turns a vague ask into concrete data and solution requirements. Its real job is triage: for
-someone fielding requests with no business analyst or project manager support, it answers one
-question, is there enough substance here yet to be worth my attention, before any of that time
-gets spent. Whether a ready request is actually worth doing next is a separate call it
-deliberately leaves alone; readiness and value are two different axes, and this tool only ever
-grades the first.
+Built for a data engineer running their own request pipeline with no business analyst or
+project manager support, the individual contributor who ends up doing all three jobs because
+nobody else is. A self-serve tool that interviews the person requesting a data solution, in plain
+language, and turns a vague ask into concrete data and solution requirements. Its real job is
+triage: before any investigation time gets spent, it answers one question, is there enough
+substance here yet to be worth my attention. Whether a ready request is actually worth doing next
+is a separate call it deliberately leaves alone; readiness and value are two different axes, and
+this tool only ever grades the first.
 
 ## Status
 
