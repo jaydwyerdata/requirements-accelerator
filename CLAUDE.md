@@ -12,8 +12,8 @@ It is project work intake, tied to a program increment cycle, not a BAU ticket q
 therefore a prioritisation input as much as a build input: what is ready to work on, what is
 missing before it can be sized, and which requests overlap with each other.
 
-Built for individual contributors who act as their own business analyst, project manager and scrum
-master because nobody else is doing it.
+Built for engineers who own the full path from business conversation to production design, and
+want the repeatable first pass of requirements gathering handled by a tool.
 
 ## Companion documents
 

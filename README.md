@@ -2,9 +2,8 @@
 
 A curious business analyst at the front, a data engineer at the back.
 
-Built for a data engineer running their own request pipeline with no business analyst or
-project manager support, the individual contributor who ends up doing all three jobs because
-nobody else is. A self-serve tool that interviews the person requesting a data solution, in plain
+Built for data engineers who own their request pipeline end to end, from the first business
+conversation through to a sized, buildable spec. A self-serve tool that interviews the person requesting a data solution, in plain
 language, and turns a vague ask into concrete data and solution requirements. Its real job is
 triage: before any investigation time gets spent, it answers one question, is there enough
 substance here yet to be worth my attention. Whether a ready request is actually worth doing next
@@ -112,27 +111,29 @@ this exists.
 
 ## The problem
 
-I'm the one this lands on. A hands-on data engineer with no business analyst, project manager or
-scrum master on my team, so all three jobs sit on top of the actual engineering work, not instead
-of it. This tool exists because I needed it myself, not as a hypothetical persona.
+I built this for the way I already work. As a hands-on data engineer, I run requirements, delivery
+and architecture alongside the engineering itself, so I see every request from the first
+conversation onwards. That vantage point showed me where the time actually goes, and where a tool
+could take on the repeatable part. This tool exists because I wanted it myself, not as a
+hypothetical persona.
 
-Data teams without business analyst support spend their time translating. A request arrives as "I
+Every data request starts with translation. A request arrives as "I
 need to see our renewals", and somewhere between that sentence and a working data product, someone
 has to work out what one row represents, which system is authoritative, whether history needs
 tracking, and what the requester actually means by "renewal".
 
 Most requirements tooling stops before any of that. It writes a tidy user story and leaves every
-expensive technical decision unasked, which means the translation work still lands on the engineer,
-usually in a series of follow-up conversations that neither side enjoys.
+expensive technical decision unasked, so the translation still happens later, through follow-up
+conversations.
 
-The people making the requests cannot answer those questions directly, and it is unreasonable to
-expect them to. Nobody outside a data team knows what grain is. Everybody knows what one row of a
-spreadsheet would represent.
+The people making the requests can't answer those questions directly, and they shouldn't have to.
+Nobody outside a data team knows what grain is. Everybody knows what one row of a spreadsheet
+would represent.
 
-Without a business analyst absorbing that translation work, it lands directly on whoever owns the
-backlog, alongside everything else already on their plate. Every incoming request needs roughly
-the same investigation before it is even clear whether it is ready to size, work that competes for
-the same hour as actually building things.
+That's the opportunity. Every incoming request needs roughly the same first-pass investigation
+before it's clear whether it's ready to size, and most of that investigation follows a repeatable
+pattern. Capture it once as a structured interview, and engineering time goes to building instead
+of re-asking the same questions, while the requester gets a faster, clearer answer.
 
 ## What it does
 
