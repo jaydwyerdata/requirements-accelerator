@@ -30,3 +30,6 @@ Thumbs.db
 .claude/
 Test Interview/
 Claude outputs/
+
+# Demo-prep working files (speaking scripts, slide outlines, diagrams), kept local
+demo/
