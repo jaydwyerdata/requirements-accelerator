@@ -6,10 +6,8 @@ model-provider seam swaps onto Snowflake Cortex cleanly, and whether bridge.py's
 background-thread pattern survives inside Snowflake's compute environment. Storage and
 delivery are untouched (still SQLite and a local disk write), that's the rest of a3, not this.
 
-This step needs to run somewhere that can actually reach your Snowflake trial account and the
-`snow` CLI, which this write-up was prepared from can't do directly. Run it from Claude Code on
-jaypc, or by hand, the same pattern e4's and e12's live verification and the Listening Lens
-build all used.
+Deploying needs a machine with the `snow` CLI configured against a Snowflake account. The spike
+was run that way on 13 September 2026; the outcome is under "What actually happened" below.
 
 ## What's already built, ready to deploy as-is
 
@@ -96,12 +94,6 @@ and fixed. Full account in docs/architecture-decisions.md's "a3 spike" entry; sh
 - `snow streamlit deploy` also failed on a stray local `engine/__pycache__` directory (unrelated
   to Cortex or Streamlit), and on trying to create a stage in a personal database, both worked
   around during this run, see architecture-decisions.md for specifics.
-
-## Afterwards
-
-Whatever happens, tell Claude what you saw (worked cleanly, hung, errored, partially worked)
-so the tracker, architecture-decisions.md and memory get the honest outcome recorded, the same
-way e4's and e12's live runs were, rather than this staying a documented-but-unconfirmed claim.
 
 ## Cleanup
 
