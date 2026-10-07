@@ -210,7 +210,7 @@ deploy steps.
 
 - [`CLAUDE.md`](CLAUDE.md) states the working rules, the two-persona design, and the build
   discipline this project holds itself to.
-- [`docs/coaxing-protocol.md`](docs/coaxing-protocol.md) is the question bank: nine interview
+- [`docs/coaxing-protocol.md`](docs/coaxing-protocol.md) is the question bank: ten interview
   layers, each plain-language question paired with the technical attribute its answer reveals.
 - [`docs/provenance-model.md`](docs/provenance-model.md) defines how every field in the technical
   spec is tagged: stated, inferred, assumed or missing, and how each state is earned.
