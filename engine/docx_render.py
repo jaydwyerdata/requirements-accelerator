@@ -130,7 +130,7 @@ def render_business_ask_docx(ledger: Ledger, interview_id: str = "") -> Document
         for gap in requester_gaps:
             doc.add_paragraph(gap, style="List Bullet")
     else:
-        doc.add_paragraph("This is ready to size and build.")
+        doc.add_paragraph("Nothing more is needed from you for now. The data team will review this and come back to you.")
 
     return doc
 

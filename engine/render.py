@@ -111,7 +111,7 @@ def render_business_ask(ledger: Ledger) -> str:
         for gap in requester_gaps:
             lines.append(f"  {gap}")
     else:
-        lines.append("  This is ready to size and build.")
+        lines.append("  Nothing more is needed from you for now. The data team will review this and come back to you.")
     return "\n".join(lines)
 
 

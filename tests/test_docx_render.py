@@ -99,7 +99,7 @@ class BusinessAskDocxTest(unittest.TestCase):
         for field_id in ("problem_statement", "query_type", "primary_measure", "grain"):
             ledger.set(field_id, "00", "established", ProvenanceState.STATED, source="requester")
         doc = render_business_ask_docx(ledger)
-        self.assertIn("This is ready to size and build.", _paragraph_texts(doc))
+        self.assertIn("Nothing more is needed from you for now. The data team will review this and come back to you.", _paragraph_texts(doc))
 
     def test_requester_gaps_render_as_bullets(self):
         ledger = Ledger()

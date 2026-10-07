@@ -54,7 +54,7 @@ from engine.interview import run_interview
 from engine.knowledge import SqliteRetainedKnowledge
 from engine.ledger import Ledger
 from engine.reasoner import ClaudeCodeReasoner
-from engine.render import render_business_ask, render_technical_spec
+from engine.render import render_business_ask
 from engine.storage import SqliteStorage
 
 DB_PATH = "requirements_accelerator.db"
@@ -222,8 +222,8 @@ if "status" not in st.session_state:
 
 if st.session_state.status == "idle":
     st.write(
-        "Answer a short interview about what you need. It ends with a plain-language business "
-        "ask and a technical spec ready for engineering."
+        "Answer a short interview about what you need. It ends with a plain-language summary "
+        "of your request for you to check. A separate technical spec goes to the data team."
     )
     st.caption(_reasoner_requirement_caption())
     if st.button("Start interview", type="primary"):
@@ -238,15 +238,17 @@ elif st.session_state.status == "done":
     st.text(st.session_state.transcript)
     st.divider()
     ledger = st.session_state.ledger
-    st.subheader("Business ask")
+    # Only the business ask is shown here. The technical spec, readiness block included, is
+    # written for the data team and never shown to the requester (CLAUDE.md, "What it
+    # produces"); it is delivered to the output folder alongside the business ask instead.
+    # Caught during demo recording on 7 October 2026, when this screen still printed both.
+    st.subheader("Your request, as we understood it")
     st.text(render_business_ask(ledger))
-    st.subheader("Technical spec")
-    st.text(render_technical_spec(ledger))
     delivered = st.session_state.get("delivered")
     if delivered:
         st.caption(
-            f"Business ask saved to {delivered['business_ask']}  \n"
-            f"Technical spec saved to {delivered['technical_spec']}"
+            f"A copy has been saved to {delivered['business_ask']}  \n"
+            "The technical spec has gone to the data team."
         )
     if st.button("Start a new interview"):
         _reset()
