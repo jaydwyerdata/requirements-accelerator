@@ -31,5 +31,6 @@ Thumbs.db
 Test Interview/
 Claude outputs/
 
-# Demo-prep working files (speaking scripts, slide outlines, diagrams), kept local
+# Demo-prep working files (speaking scripts, slides, diagrams, raw recordings), kept local
 demo/
+demo-assets/
