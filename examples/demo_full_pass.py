@@ -1,4 +1,4 @@
-"""Demo run 3: a full pass through all nine layers, including layer 07's per-term loop.
+"""Demo run 3: a full pass through all ten layers, including layer 07's per-term loop.
 
 Exercises, in one scripted run: layer 00's clean (non-redirected) gate; layer 02's
 drill-through question NOT skipped (dimensions are named); layer 04's system-of-record

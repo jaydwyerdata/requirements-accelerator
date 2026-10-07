@@ -17,7 +17,7 @@ layer runs end to end, both output documents render, and the same code runs unmo
 environments, a local terminal or browser and inside Snowflake (see Portability below). No auth,
 multi-tenancy or hosted service, by design, see Scope.
 
-`python cli.py` and `streamlit run app.py` both walk all nine interview layers (00 through 09),
+`python cli.py` and `streamlit run app.py` both walk all ten interview layers (00 through 09),
 including layer 07's per-term definition loop, then produce a business ask and a technical spec
 from what the interview collected. Every interview persists to a local SQLite file
 (`requirements_accelerator.db`, gitignored, runtime data, not source), so a later interview
@@ -73,7 +73,7 @@ for, and the teardown if it isn't still running.
 
 See `examples/` for five scripted runs against the engine directly: a clean layer 00
 pass, one that trips the layer 00 redirect and self-corrects within the two-attempt cap, a full
-nine-layer pass that locks a definition in layer 07 and promotes an inferred field on
+ten-layer pass that locks a definition in layer 07 and promotes an inferred field on
 confirmation, one that exercises both "not applicable" branches (layer 02's drill-through, layer
 04's system of record) plus a reflection that gets no reaction, and one that proves retained
 knowledge actually persists: a term locked in one interview shows up as a concrete question in a

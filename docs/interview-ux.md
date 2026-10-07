@@ -109,5 +109,5 @@ framing exactly. `growth_rate`: MC, yes, no, not sure.
 ## What this doesn't decide
 
 This document says what widget each question becomes, not how those widgets are laid out on screen,
-how progress through the nine layers is shown, or what the reflection checkpoints look like visually.
+how progress through the ten layers is shown, or what the reflection checkpoints look like visually.
 That's mockup work, not classification work, and it's next.

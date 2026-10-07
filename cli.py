@@ -2,7 +2,7 @@
 
 python cli.py
 
-Covers all nine layers (00 through 09), including layer 07's per-term definition loop, and
+Covers all ten layers (00 through 09), including layer 07's per-term definition loop, and
 persists every interview to a local SQLite file (requirements_accelerator.db, gitignored - it's
 runtime data, not source) so later interviews can check a term's retained definition against
 real prior interviews rather than nothing. Every judgement call goes to ClaudeCodeReasoner (e4):

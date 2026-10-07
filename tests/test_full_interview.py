@@ -1,4 +1,4 @@
-"""Automated assertions over examples/demo_full_pass.py, the scripted run through all nine
+"""Automated assertions over examples/demo_full_pass.py, the scripted run through all ten
 layers. The demo script itself only prints the rendered documents for a person to read; this
 adds the pass/fail checks that were previously "read the transcript and eyeball it": the term
 queued in layer 07 actually locks with the definition given, layer 05's inferred fields promote

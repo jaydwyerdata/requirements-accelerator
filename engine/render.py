@@ -1,7 +1,7 @@
 """Renders the two output documents from the ledger, per docs/output-template.md and
 docs/readiness-scoring.md.
 
-Now that the interview covers all nine layers plus layer 07's per-term loop, this renders the
+Now that the interview covers all ten layers, including layer 07's per-term loop, this renders the
 full shape both documents are meant to have: a readiness block, then layers 00 through 09
 field by field, a definitions subsection keyed by term, and a reporting specification
 appendix whenever a primary measure exists.

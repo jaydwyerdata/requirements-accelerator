@@ -17,7 +17,7 @@ want the repeatable first pass of requirements gathering handled by a tool.
 
 ## Companion documents
 
-- **Coaxing Protocol** (v0.2) is the question bank: nine interview layers, each plain-language
+- **Coaxing Protocol** (v0.2) is the question bank: ten interview layers, each plain-language
   question paired with the technical attribute its answer reveals.
 - **Provenance model** (v0.1) defines how every collected field is marked: stated, inferred,
   assumed or missing.
