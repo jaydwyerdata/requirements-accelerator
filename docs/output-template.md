@@ -28,18 +28,19 @@ interview already established what that language is.
 phrased as the outcome the requester is after, not as a list of features.
 
 **What happens next.** A plain-language read of readiness, not the readiness machinery itself.
-Ready to size, it says so. Blocked on something only the requester can close, it says what, in
-their own terms, as an ordinary sentence: "we'd still like to understand who else relies on this,"
-never "gap: downstream_dependencies, owner: requester." The tags and the word gap stay internal;
+When nothing is left for the requester to close, it says: "Nothing more is needed from you for now.
+The data team will review this and come back to you." It never states readiness itself, because a
+team-owned blocking gap can still be open. Blocked on something only the requester can close (the
+kind of answer, the one number, what one row is, or an unlocked term), it says what, in their own
+terms, as an ordinary sentence: "we'd still like to agree on what one row of this actually
+represents," never "gap: grain, owner: requester." The tags and the word gap stay internal;
 the substance of an open question is allowed to surface as prose, because otherwise this beat has
 nothing honest left to say. Gaps the data team can close on its own are not mentioned here at all,
 since they are not the requester's to act on.
 
-**No business ask renders at all if layer 00's gate never cleared.** With no established problem
-statement there is nothing genuine to reflect back, and a placeholder acknowledging a stalled
-attempt would be exactly the kind of hollow content claim integrity rules out. The technical side
-can still note that an ungated attempt exists; the requester-facing document simply does not
-generate.
+**If layer 00's gate never cleared, the business ask is reduced to its letterhead and one sentence
+saying the problem hasn't been understood yet.** With no established problem statement there is
+nothing genuine to reflect back, so nothing beyond that sentence is generated.
 
 ## The technical spec
 
@@ -80,7 +81,8 @@ whoever builds it, or a future extension of this document, not something invente
 
 ## What the renderer does not do
 
-It does not compute the readiness score, only places it. It does not decide whether a field counts
+Readiness is computed inside the renderer (`render_readiness_block`, mirrored in
+`docx_render.py`), following `docs/readiness-scoring.md`'s rules rather than inventing its own. It does not decide whether a field counts
 as locked, that is the interview branching document's rule, applied before the field ever reaches
 the renderer. It does not soften or interpret a gap's wording, a missing field renders as missing
 regardless of how close the interview got. Rendering is the last, most mechanical step: by the time
@@ -90,8 +92,9 @@ it runs, every real decision has already been made.
 
 Decided 14 September 2026 (see `docs/architecture-decisions.md`'s e13 entry for the full account).
 Both documents are delivered as `.docx` files, not plain text: engine/render.py's plain-text
-functions still exist and still feed the terminal printout (cli.py) and the on-screen recap
-(app.py), but what gets written to disk goes through a second renderer, `engine/docx_render.py`,
+functions still exist and still feed the terminal printout (cli.py, a developer view that prints
+both documents) and the browser's finish screen (app.py, which shows the requester only the
+business ask and says the technical spec has gone to the data team), but what gets written to disk goes through a second renderer, `engine/docx_render.py`,
 that turns the same ledger into a letterheaded Word document. This section says how that structure
 maps onto the two documents above, not a new content decision, the content is unchanged.
 
@@ -105,9 +108,11 @@ to solve", "What happens next") with the same gate: no problem statement, no doc
 letterhead and a one-line explanation why.
 
 **The technical spec** renders every field table (one per layer) with an added fourth visual
-element beyond what the plain-text version shows: a coloured badge in the State column, matching
-the colour already used for status on the project's build tracker (green stated, blue inferred,
-amber assumed, red missing). The readiness block leads with the same badge treatment on its overall
+element beyond what the plain-text version shows: a coloured badge in the State column (green stated, blue inferred,
+amber assumed, red missing); green, amber and red reuse the project's build-tracker status
+palette, and blue was added for inferred. Files are written to `delivered/business-ask/` and
+`delivered/technical-spec/`, named with a UTC timestamp and the interview id's first eight
+characters. The readiness block leads with the same badge treatment on its overall
 status (green "READY TO SIZE", red "NOT READY TO SIZE"). This is deliberate: the provenance model's
 whole point is what came from the requester versus what was inferred or assumed, and a colour you
 see before you read anything makes that distinction the first thing a reader notices rather than

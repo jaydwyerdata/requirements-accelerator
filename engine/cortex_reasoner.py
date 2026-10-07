@@ -16,7 +16,7 @@ isn't one, which is the correct failure, not something to work around here.
 
 AI_COMPLETE, not the legacy SNOWFLAKE.CORTEX.COMPLETE: Snowflake's own docs mark COMPLETE
 "provided for backward compatibility" and name AI_COMPLETE as "the canonical surface going
-forward," with COMPLETE slated for deprecation by the end of 2026. Building a portfolio piece
+forward," with COMPLETE slated for deprecation by the end of 2026. Building
 against a function already flagged for removal would be exactly the kind of undefendable
 choice CLAUDE.md's claim-integrity rule rules out, so this targets the current one.
 

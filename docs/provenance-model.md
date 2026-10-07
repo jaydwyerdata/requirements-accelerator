@@ -34,10 +34,11 @@ the interview asks about at all. Freshness defaulting to nightly batch when noth
 conversation implied otherwise is assumed. Retention defaulting to the organisation's standard
 window is assumed. An assumed field is never a business fact and never gets described as one: it is
 a placeholder the data team is expected to confirm or override, flagged exactly so it does not
-quietly harden into a decision nobody made.
+quietly harden into a decision nobody made. (Status, 7 October 2026: the state is defined and
+rendered, but the current interview applies no defaults, so no field is ever set to assumed yet.)
 
 **Missing.** Nothing established a value and no default applies. Recorded as a gap, which is where
-this document hands off to the gap ownership rule already defined in `CLAUDE.md`: a missing field
+this document hands off to the gap ownership rule defined in `docs/readiness-scoring.md`: a missing field
 is attributed to whoever can close it, the requester or the data team, using the same attribution
 the readiness score reports. Provenance does not compute that attribution twice; a missing tag
 carries the same owner the readiness score already assigned.
@@ -61,9 +62,10 @@ an inferred field to stated, and it only does so on an explicit reaction.
 
 If the requester actively confirms the reflected summary, every inferred field it covered is
 retagged stated, confirmed by reflection, with a note recording which layer boundary the
-confirmation happened at. If the requester corrects it, the corrected value goes in as stated,
-their correction, and the original inference is kept in the record rather than deleted, since a
-wrong inference is itself useful evidence about how the back-of-house reasoning is performing.
+confirmation happened at. If the requester corrects it, the correction is recorded as stated, in their words, as one note for
+the whole layer, and the original inferences stay in the record unchanged rather than deleted, since
+a wrong inference is itself useful evidence about how the back-of-house reasoning is performing.
+Attaching a correction to the single field it changes is a known gap, not yet built.
 
 Silence is not confirmation. If a requester simply proceeds past a reflection without reacting to
 it, the field stays inferred. An interview that does not capture an explicit reaction has not
@@ -77,8 +79,8 @@ knowledge principle in `CLAUDE.md`. What happens to the field once the requester
 on which way they answer, but the state is stated either way. What differs is the lineage attached
 to it.
 
-**If the requester agrees** with a recalled prior definition, the field is tagged stated, with a
-lineage pointer back to the interview that first established it. This is not the same as treating
+**If the requester agrees** with a recalled prior definition, the field is tagged stated. A lineage
+pointer back to the interview that first established it is designed but not yet built. This is not the same as treating
 the two answers as one fact with two witnesses: the current interview's stated value is its own
 record, the pointer just lets overlap detection find the earlier one.
 
@@ -96,7 +98,9 @@ what its outcome was, nothing stronger.
 ## What a tagged field looks like
 
 The technical spec renders each field with its value, its state, and enough provenance to audit it
-without re-running the interview. A minimal record:
+without re-running the interview. The records below are illustrative: in code a field record holds
+its value, state, source, owner and a free-text note, which carries detail such as reflection
+confirmation.
 
 ```
 field:      grain

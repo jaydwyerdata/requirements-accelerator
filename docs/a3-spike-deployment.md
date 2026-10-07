@@ -14,7 +14,7 @@ was run that way on 13 September 2026; the outcome is under "What actually happe
 - `engine/cortex_reasoner.py`: `CortexReasoner`, the same prompts as `ClaudeCodeReasoner` (both
   now extend a shared `_PromptedReasoner` in `engine/reasoner.py`), calling `AI_COMPLETE`
   through the active Snowpark session instead of shelling out to the `claude` CLI.
-- `app.py`: unchanged except `_select_reasoner()`, which tries `get_active_session()` first and
+- `app.py`: the only Snowflake-specific code is `_select_reasoner()`, which tries `get_active_session()` first and
   only falls back to `ClaudeCodeReasoner` if that fails, so the exact same file runs locally
   and inside Snowflake, plus a small `_rerun()` helper added once this spike actually ran (see
   "What actually happened" below), since Streamlit-in-Snowflake's bundled Streamlit predates
@@ -82,7 +82,8 @@ and fixed. Full account in docs/architecture-decisions.md's "a3 spike" entry; sh
 
 - `bridge.py`'s background thread completed cleanly every time, no hangs, across a full
   35-field interview run to completion (business ask and technical spec both rendered,
-  storage and delivery both succeeded).
+  storage and delivery both succeeded). Since 7 October 2026 the finish screen shows the
+  requester only the business ask; both documents are still delivered.
 - `AI_COMPLETE` itself worked, but its replies come back as full JSON string literals (quotes
   plus escaped newlines), which silently broke `judge()`'s yes/no parsing and
   `summarise_for_reflection()`'s line breaks until `CortexReasoner._call()` unwrapped them with

@@ -2,7 +2,7 @@
 
 Version 0.2, last revised 9 September 2026.
 
-The plain-English question set that pulls data design requirements out of people who have never heard the word "grain". Each question is paired with the technical attribute its answer reveals. Questions are asked in layer order. Layer 00 gates everything: a request that cannot clear it does not proceed.
+The plain-English question set that pulls data design requirements out of people who have never heard the word "grain". Each question is paired with the technical attribute its answer reveals. Questions are asked in layer order. Layer 00 gates everything: a request that cannot clear it after two attempts is flagged for review, and the gap carries forward into the output.
 
 Questions marked **rarely asked** are the ones most often skipped and most expensive to retrofit.
 
@@ -181,6 +181,8 @@ Reveals: Slowly changing dimensions: history tracking vs. current state
 This layer *is* the semantic layer. Everything here becomes a metric definition, a filter, or a synonym.
 
 > When you say "active", what makes something count?
+
+(Asked once per ambiguous term the interview has picked up; "active" is an example.)
 
 Reveals: The business rule behind the term → metric definition
 

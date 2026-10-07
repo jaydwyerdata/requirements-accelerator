@@ -19,7 +19,8 @@ one blended number.
 missing. Binary, and it never gets softened by how complete everything else is.
 
 **Completion score** is the percentage of this request's applicable fields that are non-missing,
-stated, inferred or assumed all count, only missing does not. This gives a real sense of depth, and
+stated, inferred or assumed all count, only missing does not. Each layer 07 term counts as one unit
+on top of the fixed fields, non-missing only once it is locked. This gives a real sense of depth, and
 it can sit at eighty-seven percent and still carry a not-ready status if the missing thirteen
 percent includes something load-bearing. The two numbers are read together, never one standing in
 for the other: "87% complete, not ready to size, missing grain" is the honest sentence this is
@@ -79,8 +80,10 @@ list at once, load-bearing and closable without going back to the stakeholder.
 
 ## Rendering a named gap
 
-Each missing field renders as its plain-language consequence, not its field name, drawing on the
-Coaxing Protocol's own reveals text rather than inventing new copy for the same idea twice:
+Each missing blocking field renders as its plain-language consequence, with its owner, drawing on
+the Coaxing Protocol's own reveals text rather than inventing new copy for the same idea twice.
+Workable gaps are currently counted ("Workable gaps not yet collected: N") rather than itemised;
+the second example below shows the designed itemised form:
 
 ```
 gap:      grain

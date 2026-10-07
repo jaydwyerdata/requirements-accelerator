@@ -1,5 +1,5 @@
 # a3 spike (see docs/a3-spike-deployment.md and docs/architecture-decisions.md's "a3 spike"
-# entry): deploys app.py, unmodified except for _select_reasoner and a small _rerun() helper
+# entry): deploys app.py, whose only Snowflake-specific code is _select_reasoner and a small _rerun() helper
 # added once this spike actually ran (Streamlit-in-Snowflake's bundled Streamlit predated
 # st.rerun()), as a Streamlit-in-Snowflake app on the standard warehouse runtime, no compute
 # pool needed. `engine/` is listed as a whole artifact so the package (including

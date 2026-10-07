@@ -29,8 +29,13 @@ want the repeatable first pass of requirements gathering handled by a tool.
   who owns closing each named gap.
 - **Interview interaction design** (v0.1) defines which widget, free text, multi-choice, hybrid or
   banded, each question uses on screen.
+- **Synthetic dataset** describes the ten invented interviews used to test overlap detection.
+- **Architecture decisions** is the dated build log: every decision, verification run and
+  correction, in order.
+- **a3 spike deployment** records how the app was deployed and run inside Snowflake.
 
-All six are reference documents. This file governs how work happens; those define what gets built.
+All nine live in `docs/`. This file governs how work happens; the first six define what gets built,
+and the last three record what was built and how it was verified.
 
 ## Working rules
 
@@ -38,8 +43,8 @@ All six are reference documents. This file governs how work happens; those defin
 generated output. Use commas, colons, semicolons or full stops.
 
 **Document as you go, not afterwards.** Every design decision gets written down when it is made.
-Retrofitted documentation does not happen, and this repo is intended to be readable by people
-assessing how its author thinks, so the reasoning matters as much as the code.
+Retrofitted documentation does not happen, and this repo is intended to be readable by anyone
+picking it up, so the reasoning matters as much as the code.
 
 **Plain language in anything the requester sees.** The tool's whole premise is that technical
 vocabulary excludes the people whose answers it needs. A prompt, label or error message that
@@ -183,9 +188,10 @@ since the Snowflake runtime is fussier about imports than a laptop is.
 
 **Tool-agnostic core.** The tool must be useful to someone working on any warehouse. The generic
 core produces a platform-neutral semantic model: entities, measures, dimensions, synonyms and
-filters. Platform-specific output is an adapter on top, never baked in. The first adapter targets
-Snowflake semantic views built from dbt models, because that is what makes the output directly
-consumable by Cortex Analyst and Snowflake Intelligence.
+filters. Platform-specific output is an adapter on top, never baked in. The first adapter
+(`semantic_view_adapter.py`) emits a Snowflake semantic view scaffold, because that is what makes
+the output directly consumable by Cortex Analyst and Snowflake Intelligence; physical table
+references stay as TODO placeholders, since the interview never asks for schema.
 
 **Delivery is the thinnest layer.** Writing finished documents to a synced folder is the default,
 because it reaches SharePoint or OneDrive without any integration, credentials or tenant

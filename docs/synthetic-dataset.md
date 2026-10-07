@@ -1,6 +1,10 @@
 # Synthetic Interview Dataset
 
-Version 0.1, 12 September 2026.
+Version 0.2, 7 October 2026. (v0.1, 12 September 2026. Since then e8 has been built on this
+dataset: `engine/overlap.py` and `overlap_report.py` for exact-term agreement and conflict, plus a
+`--semantic` reasoner pass for conceptual overlaps like the "active customer" and "engaged member"
+pair below. See the e8 entries in `docs/architecture-decisions.md`. The design discussion below is
+kept as written, since it is what e8 was designed against.)
 
 Ten scripted, comprehensive interviews against a made-up retailer, run through the real engine
 (`run_interview`, `StubReasoner`, `SqliteStorage`, `SqliteRetainedKnowledge`), not against mocked

@@ -23,6 +23,9 @@ already known, and if not, is it safe to ask for it yet.
 
 ## Seed intake
 
+*Status (7 October 2026): designed, not yet built. The current interview always opens layer 00 on
+an empty ledger; nothing reads notes or documents first.*
+
 Before layer 00 opens, the requester has the option to drop in notes or a reference document.
 This is never a gate and never framed as preparation they are expected to have done: most people do
 not know what they need until they are talking it through, so the interview has to work identically
@@ -48,7 +51,8 @@ whatever they supplied up front.
 Layers run 00 through 09 in order. Inside each layer, every question follows the same recipe unless
 noted as an exception below:
 
-1. If the layer has a gate, run it. Only layer 00 has one.
+1. If the layer has a gate, run it. Only layer 00 has one, and layer 00 also asks all six of its
+   questions every time rather than skipping any already-filled field.
 2. For each question, check its precondition against the ledger, then check whether anything the
    requester has already said, live, resolves it before asking it fresh. See "Live inference".
    - No precondition, nothing already resolves it, and the target field is missing: ask it live.
@@ -74,6 +78,10 @@ the others in the same layer, so they all get asked unless the ledger already an
 layers do not.
 
 ## Live inference: seed intake never really ends
+
+*Status (7 October 2026): designed, not yet built. Today each question is skipped only when its own
+field is already filled or its precondition rules it out; earlier answers are not re-scanned before
+each question.*
 
 Seed intake's scan, does this text already answer one of the fields on the list, is not a one-time
 step that stops mattering once layer 00 opens. It runs again before every question, this time
@@ -107,7 +115,9 @@ all the way through to the reporting specification in the final document. It was
 problem and not a missing-value problem: it was a real reply the tool never checked was an answer
 at all.
 
-Every question now runs this check before anything is written to the ledger:
+Every question runs this check before anything is written to the ledger, except three of layer
+07's per-term questions (competing definition, exclusions and synonyms), whose replies are recorded
+as given:
 
 1. The reply is classified as an answer, a clarifying question, or a don't-know (not sure, don't
    know, a blank, or anything in that family).
@@ -194,12 +204,12 @@ toward the categories offered instead of the requester's own. It is accepted her
 alternative, a false "nothing excluded" that surfaces as a dispute after the build, is worse.
 
 A term does not count as locked, available to the technical spec as an authoritative definition,
-until it clears all three: a concrete testable definition, an explicit exclusions answer, and
-layer-boundary reflection confirming it. Short of that it stays a named gap rather than something the
+until it clears all three: a concrete testable definition, an explicit exclusions answer, and the
+per-term reflection that closes each pass confirming it. Short of that it stays a named gap rather than something the
 spec quietly treats as settled.
 
-**The term queue itself needs a dedup pass before layer 07 opens.** Terms are currently collected by
-calling `extract_terms` once per layer, independently, with dedup by exact string match only. The
+**The term queue gets one dedup pass before layer 07 opens.** Terms are collected by calling
+`extract_terms` once per layer, independently, with dedup by exact string match only. The
 first live run against a real interview surfaced what that misses: "trends" and "product trends"
 queued as two separate terms, so did "opportunities" and "growth opportunities", both genuine
 overlaps a person would recognise instantly and a string comparison cannot. The same run also
@@ -208,13 +218,11 @@ queued "last week", a comparison period already captured in full by `benchmark_c
 define differently. Eleven terms queued from one interview, several of them redundant or not
 actually ambiguous business terms at all, is what made layer 07 feel endless rather than thorough.
 
-The fix is a single pass over the whole candidate queue, once, after collection and before layer 07
-opens, rather than the current per-layer collection with no visibility into what has already been
-queued. That pass needs to catch near-duplicates a string match cannot, and needs to recognise a
-term that is already fully answered by a structured field elsewhere in the ledger. The exact
-mechanism, and whether the total queue should also be capped outright, is an implementation decision
-for `engine/interview.py` and `engine/reasoner.py`, not specified here: this document commits to the
-outcome, one pass, deduplicated, before the loop starts, not to a particular algorithm for it.
+The fix, now built, is a single pass over the whole candidate queue, once, after collection and
+before layer 07 opens: `run_interview` calls the reasoner's `consolidate_terms()`, which merges
+near-duplicates a string match cannot catch and drops terms already fully answered by a structured
+field elsewhere in the ledger. The queue is not capped. Convergence is still imperfect across long
+interviews (see `docs/architecture-decisions.md`), which is a known, watched limitation.
 
 ## Abandonment
 
@@ -238,8 +246,9 @@ here.
 - **02**: primary_measure, dimensions, drill_through_required, benchmark_comparison
 - **03**: grain, fan_out_risk, cardinality_risk
 - **04**: source_systems, system_of_record, entry_latency, restatement_handling
-- **05**: downstream_dependencies, steward (inferred only, never asked directly), decision_rights
-  (inferred only, never asked directly), onward_flows, criticality_tier, access_approver
+- **05**: downstream_dependencies, steward (asked indirectly, "who do you go to when the numbers
+  look wrong", and recorded as inferred), decision_rights (asked indirectly and recorded as
+  inferred), onward_flows, criticality_tier, access_approver
 - **06**: freshness_sla, schedule_alignment, history_depth, scd_requirement
 - **07**: metric_definition, competing_definition_check, exclusion_filters, synonyms, each keyed by
   term and repeated once per term queued

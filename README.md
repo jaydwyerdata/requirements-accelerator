@@ -14,14 +14,17 @@ this tool only ever grades the first.
 
 ## Status
 
-Feature-complete for a single-user portfolio build, not production software: every interview
+Feature-complete for a single-user build, not production software: every interview
 layer runs end to end, both output documents render, and the same code runs unmodified in two live
 environments, a local terminal or browser and inside Snowflake (see Portability below). No auth,
 multi-tenancy or hosted service, by design, see Scope.
 
 `python cli.py` and `streamlit run app.py` both walk all ten interview layers (00 through 09),
 including layer 07's per-term definition loop, then produce a business ask and a technical spec
-from what the interview collected. Every interview persists to a local SQLite file
+from what the interview collected. In the browser UI the requester sees only the business ask
+when they finish ("Your request, as we understood it"); the technical spec goes straight to the
+data team's folder and is never shown on screen. `cli.py` is a developer view and prints both
+documents to the terminal of whoever runs it. Every interview persists to a local SQLite file
 (`requirements_accelerator.db`, gitignored, runtime data, not source), so a later interview
 touching the same term sees what a prior one locked in as its definition rather than starting from
 nothing.
@@ -57,7 +60,7 @@ technical spec is internal only.
 
 ```
 python cli.py                              # terminal
-streamlit run app.py                       # local browser UI (e7, confirmed working 12 Sep 2026)
+streamlit run app.py                       # local browser UI
 snow streamlit deploy --replace --open     # Streamlit in Snowflake (a3 spike, see below)
 ```
 
@@ -103,9 +106,10 @@ python -m unittest discover -s tests
 per-question `choices` plumbing app.py's widget layer depends on, `engine/delivery.py`'s
 disk-writing behaviour (a2, now `.docx` files, see below), `engine/docx_render.py`'s letterhead,
 readiness badge and per-field provenance badge colours (e13), the ten-interview synthetic dataset
-below, e8's overlap report, a1's semantic view adapter, and a3's `CortexReasoner` calling
+below, e8's overlap report (including the `--semantic` conceptual pass), the `reframe()` prompt guard,
+a1's semantic view adapter, and a3's `CortexReasoner` calling
 convention against a faked Snowpark session (all below), in real pass/fail assertions (stdlib
-`unittest`, no new dependency beyond `python-docx`, 109 tests as of this writing), reusing each
+`unittest`, no new dependency beyond `python-docx`, 109 tests), reusing each
 demo script's scripted dialogue by import rather than duplicating it. The demo scripts stay as
 readable, runnable walkthroughs; this is what actually catches a regression rather than relying on
 someone reading printed output. See `docs/architecture-decisions.md`'s Testing section for why
@@ -238,8 +242,8 @@ deploy steps.
 
 ## How this was built
 
-Built with Claude, disclosed rather than hidden, because the point of a portfolio piece is showing
-how its author thinks, and that includes how they work with the tools available to them now.
+Built with Claude, disclosed rather than hidden, because how a tool was built is part of what it
+shows, and that includes how its author works with the tools available now.
 
 The problem framing, the design calls, and the scope decisions are mine: what the tool should
 refuse to do (invent a requirement, blend the two personas, treat readiness as a gate rather than a
@@ -259,8 +263,10 @@ answers is applied here, to what actually came from Jay and what came from the m
 
 ## Scope
 
-The core is warehouse-agnostic. Platform-specific output, for example Snowflake semantic views
-generated from dbt models, is an adapter on top rather than an assumption baked in.
+The core is warehouse-agnostic. Platform-specific output, for example the Snowflake semantic view
+scaffold `semantic_view_adapter.py` generates (physical table references left as TODO
+placeholders, since the interview never asks a requester for schema), is an adapter on top rather
+than an assumption baked in.
 
 No organisation's real schemas, data, or internal documents appear anywhere in this repository.
 Examples are invented or drawn from public datasets.

@@ -46,8 +46,8 @@ stub, and that a failed call surfaces cleanly instead of hanging or crashing on 
 result. What could not be verified here: whether `judge`, `extract_terms` and
 `summarise_for_reflection` actually produce sensible answers to real interview content, because
 this build ran inside a sandboxed session whose Bash tool spawns subprocesses that can't read
-this machine's own `claude` CLI credentials (confirmed: `~/.claude/.credentials.json` exists and
-is current, but `claude -p` still reports not logged in when run this way) - a sandbox isolation
+this machine's own `claude` CLI credentials (confirmed: the CLI's local credentials exist and
+are current, but `claude -p` still reports not logged in when run this way) - a sandbox isolation
 boundary, not a defect in the code or a fact about the machine's normal setup. Running `python
 cli.py` from an ordinary terminal, outside that sandbox, is the real end-to-end proof still
 outstanding.
@@ -55,7 +55,7 @@ outstanding.
 **Verified (11 September 2026)**: run from an ordinary PowerShell terminal on Jay's own machine,
 outside any sandbox. `claude --version` reported 2.1.263 and `claude -p "hello"` returned real,
 project-aware content, confirming the CLI is installed, logged in, and reachable from that shell.
-`python cli.py` then ran the full nine-layer interview against `ClaudeCodeReasoner`: every
+`python cli.py` then ran the full nine-layer (in fact ten-layer, 00 to 09; count corrected 7 October 2026) interview against `ClaudeCodeReasoner`: every
 judgement, term extraction and reflection in the transcript went through a real `claude -p` call,
 with no `[stub reasoner]` output anywhere in it, and no `ClaudeCliError`. The verification gap
 above is closed. What the transcript also did, which was not the point of the exercise but turned
@@ -363,7 +363,7 @@ queue handoff was already proven correct, and now the browser-facing half is too
 
 ## First real mock interview, findings (12 September 2026)
 
-**What happened**: Jay ran a full nine-layer mock interview against the real `ClaudeCodeReasoner`
+**What happened**: Jay ran a full nine-layer (in fact ten-layer; corrected 7 October 2026) mock interview against the real `ClaudeCodeReasoner`
 (a store-sales-reporting scenario), the first genuine end-to-end run by an actual person rather
 than a scripted demo. It completed cleanly, produced a business ask and a technical spec, and the
 reframe mechanism (e9) visibly worked: free-text answers that read as ambiguous got grounded,
@@ -382,7 +382,7 @@ warehouse-side structure. Fixed by removing the bare layer-number headers entire
 plain language: `Let's pin down what you mean by "{term}".`, which keeps the useful part (which
 term is being clarified next) without the internal label. The technical spec renderer's own
 `"Layer 00: the problem"` section headings are unaffected and correctly untouched: that document
-is for Jay's team, who are as technical as he is, not the requester.
+is for the data team, who are as technical as its author, not the requester.
 
 **Verified**: full `tests/` suite (28 tests) and all five `examples/demo_*.py` scripts still pass
 unchanged; no test asserted on the old header text, confirmed by searching for it first. Manually
@@ -443,7 +443,7 @@ wordings print correctly in place of the old ones.
 
 **Decision (12 September 2026)**: not porting yet. e7 and e9 had only just been confirmed working
 against a real person and a real model when the question came up, the current Snowflake trial's
-usable window is already committed to the separately tracked SE portfolio demo builds, and the
+usable window is already committed to other, separately tracked Snowflake builds, and the
 part of this project that actually demonstrates engineering judgement, the interview design and
 the provenance model, doesn't need Snowflake hosting to be shown. Porting now would trade a
 working, verified local tool for a partially-verified hosted one, for no real gain this month.
@@ -728,7 +728,7 @@ term filter, cannot prove a live model's grouping judgement is right). Full suit
 passing. Correction to what this document said a moment earlier in this same session: the `claude`
 CLI is in fact installed and logged in in the cloud sandbox this build runs in (it shares the
 session that's editing this repo), the same place e12's live verification actually ran; "on
-jaypc" was never accurate for either of them, and saying Phase B needed jaypc specifically was
+his own machine" was never accurate for either of them, and saying Phase B needed that machine specifically was
 wrong.
 
 ## Phase B run against a live model, and a genuinely open finding (13 September 2026)
@@ -880,12 +880,12 @@ left as-is given the project's own "don't gold-plate one tool" discipline.
 
 ## a3 spike (13 September 2026)
 
-a3 (Streamlit in Snowflake) was deferred on 12 September: trial time was committed to the SE
-Portfolio Demos sequence (Listening Lens, then Iceberg), and this project's portfolio value was
+a3 (Streamlit in Snowflake) was deferred on 12 September: trial time was committed to other
+Snowflake builds (Listening Lens, then Iceberg), and this project's value was
 judged to be the interview design, not the hosting. Revisited today once Jay had trial capacity
 in hand, with the trade-off named plainly rather than silently reopened: this still draws on the
-same trial budget as that sequence, and it cuts against his own 13 September instruction not to
-over-invest time in this project specifically. Decided as a small, bounded spike rather than the
+same trial budget as those builds, and this project's scope was meant to stay deliberately
+tight. Decided as a small, bounded spike rather than the
 full port: prove the two things that were genuinely unverified before committing real time to
 the other two seams (storage, delivery) and a full deployment.
 
@@ -904,7 +904,7 @@ onto a new shared base, `_PromptedReasoner`, with only `_call(prompt) -> str` le
 after the refactor, before any new code was added). `engine/cortex_reasoner.py` adds
 `CortexReasoner(_PromptedReasoner)`, calling `AI_COMPLETE` (not the legacy
 `SNOWFLAKE.CORTEX.COMPLETE`, which Snowflake's own docs mark for deprecation by the end of 2026,
-building a portfolio piece against a function already flagged for removal would be exactly the
+building against a function already flagged for removal would be exactly the
 undefendable choice CLAUDE.md's claim-integrity rule rules out) through
 `get_active_session().sql(..., params=[...])`, qmark-bound, not string-interpolated, for the
 same reason `engine/semantic_view.py` never string-formats a value into DDL. Kept out of
@@ -924,7 +924,7 @@ installed here, matching the CLAUDE.md dependencies-stay-short reasoning `cortex
 own docstring gives) proves the calling convention and that `CortexReasoner` shares every prompt
 with `ClaudeCodeReasoner`. Full suite 90/90.
 
-**Run live against the trial account on 13 September 2026, via Claude Code on jaypc.** Both real
+**Run live against the trial account on 13 September 2026, from his own machine with the `snow` CLI.** Both real
 questions are answered: `bridge.py`'s background-thread-plus-queue pattern completes cleanly
 inside Snowflake's compute environment (no hangs across a full interview, one call ran ~25s,
 most 5-8s, but every one returned), and the model-provider seam works, once two bugs the live
@@ -990,13 +990,13 @@ docs/output-template.md), correct in content but not something either persona in
 two-persona split would actually hand someone. The requester's business ask in particular is
 meant to be "something to show their own colleagues"; a wall of monospaced text does not do that.
 
-**Decided on the train, before any code was written**: Word (.docx) for both documents, not PDF
+**Decided before any code was written**: Word (.docx) for both documents, not PDF
 or a second markdown variant, since a requester or a data lead editing or annotating a Word file
 needs no extra tooling. A light letterhead on both (title, document type, interview id, date), so
 either document still identifies itself once it's saved somewhere detached from this tool. And,
 for the technical spec specifically, the provenance state (stated, inferred, assumed, missing)
 shown as a coloured badge rather than a bracketed label, using the same green/blue/amber/red the
-build tracker artifact already uses for status, because a plain-language answer sitting next to
+project's build tracker already uses for status, because a plain-language answer sitting next to
 its engineer-grade translation with the gap visually obvious, rather than something read carefully
 to notice, is the single clearest demo moment this tool has.
 
@@ -1040,3 +1040,32 @@ documentation audit found the live count is 109: `tests/test_cortex_reasoner.py`
 tests the a3 spike entry above counted to 9, with no note logging the addition, a gap against this
 file's own "document as you go" convention. `README.md`'s Testing section is corrected to match.
 No behaviour changed, only the count was stale.
+
+## Requester-facing finish screen and a Windows date fix (7 October 2026)
+
+Recording the demo surfaced two real issues, both fixed the same day.
+
+**The browser finish screen showed the requester the technical spec.** Since e7, `app.py`'s finish
+screen printed the business ask, the full technical spec (readiness block included) and both saved
+file paths. That contradicted the two-persona rule this file states under Delivery above ("the
+requester never sees the technical spec") and the e13 entry's description of the on-screen recap,
+so both of those passages described intent, not the app's actual behaviour, until now. The finish
+screen now shows only the business ask, under "Your request, as we understood it", and says the
+technical spec has gone to the data team. The start screen no longer promises the requester a
+technical spec. `cli.py` is unchanged: it is a developer view and still prints both documents.
+
+**The business ask's closing line read as a readiness verdict.** "This is ready to size and build."
+became "Nothing more is needed from you for now. The data team will review this and come back to
+you." in both `engine/render.py` and `engine/docx_render.py`. Readiness belongs in the technical
+spec; the requester only needs to know what happens next.
+
+**Word documents failed to render on Windows.** The letterhead date used `strftime("%-d %B %Y")`;
+the `-` no-padding flag is a glibc extension, and Windows rejects it with `ValueError: Invalid
+format string`, so the first full local run on Windows saved no documents at all. The date is now
+built from its parts. Tests were unaffected (they run on Linux), which is why this surfaced only in
+a real run. Full suite still 109/109.
+
+A documentation audit the same day also corrected drift in the design documents: features that are
+designed but not yet built (seed intake, live inference, lineage pointers, assumed-state defaults,
+a layer 08 follow-up) are now labelled as such, and the business-ask, readiness and term
+consolidation descriptions match the code.
