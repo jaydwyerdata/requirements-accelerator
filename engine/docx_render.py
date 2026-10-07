@@ -77,7 +77,11 @@ def _letterhead(doc: Document, document_type: str, ledger: Ledger, interview_id:
     doc.add_heading("Requirements Accelerator", level=0)
     subtitle = doc.add_paragraph()
     short_id = interview_id[:8] if interview_id else "unknown"
-    date_str = datetime.now(timezone.utc).strftime("%-d %B %Y")
+    # Built from parts rather than strftime("%-d ..."): the "-" no-padding flag is a glibc
+    # extension, and Windows' strftime rejects it with ValueError: Invalid format string.
+    # Caught on the first full local run on Windows (demo recording, 7 October 2026).
+    now = datetime.now(timezone.utc)
+    date_str = f"{now.day} {now:%B %Y}"
     run = subtitle.add_run(f"{document_type}  •  Interview {short_id}  •  {date_str}")
     run.italic = True
     run.font.size = Pt(10)
