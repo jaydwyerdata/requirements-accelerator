@@ -2,6 +2,8 @@
 
 A curious business analyst at the front, a data engineer at the back.
 
+**Watch the demo (4:50):** [youtu.be/bQh05tJXABo](https://youtu.be/bQh05tJXABo). A full interview from "I need a dashboard" to a defined request, the business ask and technical spec it produces, and the same code running inside Snowflake on Cortex.
+
 Built for data engineers who own their request pipeline end to end, from the first business
 conversation through to a sized, buildable spec. A self-serve tool that interviews the person requesting a data solution, in plain
 language, and turns a vague ask into concrete data and solution requirements. Its real job is
