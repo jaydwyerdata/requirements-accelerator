@@ -12,6 +12,10 @@ env/
 secrets.toml
 .streamlit/secrets.toml
 .snowflake_config.toml
+credentials.json
+*.pem
+*.p8
+*.key
 
 # Local data and generated output
 data/
@@ -34,3 +38,7 @@ Claude outputs/
 # Demo-prep working files (speaking scripts, slides, diagrams, raw recordings), kept local
 demo/
 demo-assets/
+
+# Archives and snapshots
+*.zip
+*.tar.gz
