@@ -71,8 +71,8 @@ account), so that path only needs the `snow` CLI configured against the trial ac
 it. All three need `pip install -r requirements.txt` (`streamlit`, `python-docx`) wherever they
 run.
 
-The Snowflake path was run live against a trial account on 13 September 2026 (the a3 spike, see
-`docs/architecture-decisions.md`'s entry) and confirmed working end to end, but it is a bounded
+The Snowflake path was run live against a trial account (the a3 spike, see
+`docs/architecture-decisions.md`'s entry for when) and confirmed working end to end, but it is a bounded
 spike, not a standing service. `docs/a3-spike-deployment.md` has the deploy steps, what to watch
 for, and the teardown if it isn't still running.
 
@@ -201,7 +201,7 @@ the Snowpark session that is already there. The swap is one function, `_select_r
 `app.py`: try `get_active_session()`, and if that fails, you are local, fall back to the CLI.
 Nothing else in the app knows or cares which one answered.
 
-Proven, not just designed: the a3 spike (13 September 2026) deployed that exact file into a
+Proven, not just designed: the a3 spike deployed that exact file into a
 Snowflake trial account with `snow streamlit deploy` and ran a full 35-field interview through it
 end to end, business ask and technical spec both rendered. Two real bugs surfaced only by running
 it live, neither guessable from reading the code first: Streamlit-in-Snowflake's bundled build
